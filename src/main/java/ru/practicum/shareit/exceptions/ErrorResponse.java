@@ -1,2 +1,10 @@
-package ru.practicum.shareit.exceptions;public class ErrorResponse {
+package ru.practicum.shareit.exceptions;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class ErrorResponse {
+    private String error;
 }
