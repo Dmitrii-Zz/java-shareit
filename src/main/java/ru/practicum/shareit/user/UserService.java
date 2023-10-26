@@ -18,14 +18,28 @@ public class UserService {
         return repository.createUser(user);
     }
 
+    public User getUserById(long id) {
+        return repository.getUserById(id);
+    }
+
     public List<User> getAllUsers() {
         return repository.getAllUsers();
     }
 
     public User updateUser(User user, long userId) {
-        validDublicateEmail(user);
         user.setId(userId);
-        return repository.updateUser(user);
+        validDublicateEmail(user);
+        User updateUser = repository.getUserById(userId);
+
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            updateUser.setEmail(user.getEmail());
+        }
+
+        if (user.getName() != null && !user.getName().isBlank()) {
+            updateUser.setName(user.getName());
+        }
+
+        return repository.updateUser(updateUser);
     }
 
     public void deleteUser(long id) {
@@ -38,9 +52,8 @@ public class UserService {
                 .filter(u -> u.getId() != user.getId())
                 .noneMatch(u -> u.getEmail().equals(user.getEmail()));
 
-        log.info("isEmailAvailable = " + isEmailAvailable);
         if (!isEmailAvailable) {
-            throw new EmailDuplicateException("Такой email существует.");
+            throw new EmailDuplicateException("email \"" + user.getEmail() + "\" занят.");
         }
     }
 }
