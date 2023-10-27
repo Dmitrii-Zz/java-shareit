@@ -13,4 +13,10 @@ public class ErrorHandler {
     public ErrorResponse handleEmailDuplicateException(final EmailDuplicateException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
