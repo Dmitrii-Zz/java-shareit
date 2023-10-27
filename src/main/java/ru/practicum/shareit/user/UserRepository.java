@@ -14,4 +14,6 @@ public interface UserRepository {
 
     User getUserById(long id);
 
+    boolean findUserByID(long id);
+
 }

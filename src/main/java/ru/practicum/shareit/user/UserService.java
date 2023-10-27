@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.EmailDuplicateException;
+import ru.practicum.shareit.exceptions.UserNotFoundException;
 
 import java.util.List;
 
@@ -19,6 +20,10 @@ public class UserService {
     }
 
     public User getUserById(long id) {
+        if (!repository.findUserByID(id)) {
+            throw new UserNotFoundException("Пользователь с id = " + id + " не найден");
+        }
+
         return repository.getUserById(id);
     }
 
