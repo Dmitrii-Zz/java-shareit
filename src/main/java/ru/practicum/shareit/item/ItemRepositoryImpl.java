@@ -29,5 +29,10 @@ public class ItemRepositoryImpl implements ItemRepository {
         return item;
     }
 
+    @Override
+    public boolean findItemById(long id) {
+        return items.containsKey(id);
+    }
+
 
 }

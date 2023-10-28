@@ -10,4 +10,6 @@ public interface ItemRepository {
 
     Item update(Item item);
 
+    boolean findItemById(long id);
+
 }

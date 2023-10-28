@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.CheckUserException;
+import ru.practicum.shareit.exceptions.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
@@ -41,6 +42,11 @@ public class ItemService {
     }
 
     public Item getItemById(long id) {
+
+        if (!itemStorage.findItemById(id)) {
+            throw new ItemNotFoundException("Отсутствует вещь с id = " + id);
+        }
+
         return itemStorage.getItemById(id);
     }
 }
