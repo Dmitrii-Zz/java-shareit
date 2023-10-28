@@ -4,8 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.CheckUserException;
 import ru.practicum.shareit.exceptions.ItemNotFoundException;
+import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,5 +52,17 @@ public class ItemService {
         }
 
         return itemStorage.getItemById(id);
+    }
+
+    public List<Item> findAllUsersItems(long userId) {
+
+        if (!userService.checkExistsUser(userId)) {
+            throw new UserNotFoundException(String.format("Пользователь с id = %d не существует", userId));
+        }
+
+        return itemStorage.findAllUsersItems(userId)
+                .stream()
+                .filter(item -> item.getOwner().getId() == userId)
+                .collect(Collectors.toList());
     }
 }
