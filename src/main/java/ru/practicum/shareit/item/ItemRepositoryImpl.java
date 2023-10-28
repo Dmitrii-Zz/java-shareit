@@ -17,4 +17,17 @@ public class ItemRepositoryImpl implements ItemRepository {
         items.put(id++, item);
         return item;
     }
+
+    @Override
+    public Item getItemById(long id) {
+        return items.get(id);
+    }
+
+    @Override
+    public Item update(Item item) {
+        items.put(item.getId(), item);
+        return item;
+    }
+
+
 }
