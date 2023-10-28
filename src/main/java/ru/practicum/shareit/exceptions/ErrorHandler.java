@@ -19,4 +19,10 @@ public class ErrorHandler {
     public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleCheckUserException(final CheckUserException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
