@@ -60,7 +60,7 @@ public class ItemService {
             throw new UserNotFoundException(String.format("Пользователь с id = %d не существует", userId));
         }
 
-        return itemStorage.findAllUsersItems(userId)
+        return itemStorage.getAllItem(userId)
                 .stream()
                 .filter(item -> item.getOwner().getId() == userId)
                 .collect(Collectors.toList());

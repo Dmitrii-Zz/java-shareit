@@ -14,6 +14,6 @@ public interface ItemRepository {
 
     boolean findItemById(long id);
 
-    List<Item> findAllUsersItems(long userId);
+    List<Item> getAllItem(long userId);
 
 }
