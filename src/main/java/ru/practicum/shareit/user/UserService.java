@@ -20,7 +20,7 @@ public class UserService {
     }
 
     public User getUserById(long id) {
-        if (!repository.findUserByID(id)) {
+        if (!checkExistsUser(id)) {
             throw new UserNotFoundException("Пользователь с id = " + id + " не найден");
         }
 
