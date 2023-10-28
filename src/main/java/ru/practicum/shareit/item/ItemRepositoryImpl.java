@@ -37,7 +37,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public List<Item> getAllItem(long userId) {
+    public List<Item> getAllItem() {
         return new ArrayList<>(items.values());
     }
 }
