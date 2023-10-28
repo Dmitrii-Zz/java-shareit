@@ -51,6 +51,10 @@ public class UserService {
         repository.deleteUser(id);
     }
 
+    public boolean checkExistsUser(long id) {
+        return repository.findUserByID(id);
+    }
+
     private void validDublicateEmail(User user) {
         boolean isEmailAvailable = repository.getAllUsers()
                 .stream()
