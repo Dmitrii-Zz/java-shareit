@@ -39,4 +39,8 @@ public class ItemService {
 
         return itemStorage.update(itemFromBd);
     }
+
+    public Item getItemById(long id) {
+        return itemStorage.getItemById(id);
+    }
 }

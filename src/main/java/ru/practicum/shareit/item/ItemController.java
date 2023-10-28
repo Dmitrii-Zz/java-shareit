@@ -24,4 +24,9 @@ public class ItemController {
                            @RequestBody Item item) {
         return itemService.updateItem(item, userId, itemId);
     }
+
+    @GetMapping("/{itemId}")
+    public Item getItemById(@PathVariable long itemId) {
+        return itemService.getItemById(itemId);
+    }
 }
