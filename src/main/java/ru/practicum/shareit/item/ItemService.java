@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.CheckUserException;
 import ru.practicum.shareit.exceptions.ItemNotFoundException;
@@ -8,11 +9,13 @@ import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemService {
     private final ItemRepository itemStorage;
     private final UserService userService;
@@ -63,6 +66,21 @@ public class ItemService {
         return itemStorage.getAllItem()
                 .stream()
                 .filter(item -> item.getOwner().getId() == userId)
+                .collect(Collectors.toList());
+    }
+
+    public List<Item> searchItem(String text) {
+
+        if (text.isBlank()) {
+            return new ArrayList<>();
+        }
+
+        String searchText = text.toLowerCase().trim();
+        return itemStorage.getAllItem()
+                .stream()
+                .filter(Item::getAvailable)
+                .filter(item -> item.getName().toLowerCase().contains(searchText)
+                             || item.getDescription().toLowerCase().contains(searchText))
                 .collect(Collectors.toList());
     }
 }
