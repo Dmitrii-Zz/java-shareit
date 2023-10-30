@@ -5,48 +5,56 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.EmailDuplicateException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
+    private final UserMapper userMapper;
 
-    public User createUser(User user) {
-        validDublicateEmail(user);
-        return repository.createUser(user);
+    public UserDto createUser(UserDto userDto) {
+        validDublicateEmail(userDto);
+        User user = userMapper.toUser(userDto);
+        return userMapper.toUserDto(repository.createUser(user));
     }
 
-    public User getUserById(long id) {
+    public UserDto getUserById(long id) {
         if (!checkExistsUser(id)) {
             throw new UserNotFoundException("Пользователь с id = " + id + " не найден");
         }
 
-        return repository.getUserById(id);
+        return userMapper.toUserDto(repository.getUserById(id));
     }
 
-    public List<User> getAllUsers() {
-        return repository.getAllUsers();
+    public List<UserDto> getAllUsers() {
+        return repository.getAllUsers()
+                .stream()
+                .map(userMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
-    public User updateUser(User user, long userId) {
-        user.setId(userId);
-        validDublicateEmail(user);
+    public UserDto updateUser(UserDto userDto, long userId) {
+        userDto.setId(userId);
+        validDublicateEmail(userDto);
         User updateUser = repository.getUserById(userId);
 
-        if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            updateUser.setEmail(user.getEmail());
+        if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
+            updateUser.setEmail(userDto.getEmail());
         }
 
-        if (user.getName() != null && !user.getName().isBlank()) {
-            updateUser.setName(user.getName());
+        if (userDto.getName() != null && !userDto.getName().isBlank()) {
+            updateUser.setName(userDto.getName());
         }
 
-        return repository.updateUser(updateUser);
+        return userMapper.toUserDto(repository.updateUser(updateUser));
     }
 
     public void deleteUser(long id) {
@@ -57,7 +65,7 @@ public class UserService {
         return repository.findUserByID(id);
     }
 
-    private void validDublicateEmail(User user) {
+    private void validDublicateEmail(UserDto user) {
         boolean isEmailAvailable = repository.getAllUsers()
                 .stream()
                 .filter(u -> u.getId() != user.getId())

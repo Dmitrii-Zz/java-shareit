@@ -9,7 +9,8 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.repository.ItemRepositoryImpl;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.controller.UserController;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.repository.UserRepositoryImpl;
 import ru.practicum.shareit.user.service.UserService;
@@ -21,20 +22,21 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class ShareItTests {
 	private final UserRepository userStorage = new UserRepositoryImpl(new HashMap<>());
-	private final UserService userService = new UserService(userStorage);
+	private final UserMapper userMapper = new UserMapper();
+	private final UserService userService = new UserService(userStorage, userMapper);
 	private final UserController userController = new UserController(userService);
 	private final ItemMapper itemMapper = new ItemMapper();
 	private final ItemRepository itemStorage = new ItemRepositoryImpl();
-	private final ItemService itemService = new ItemService(itemStorage, userService, itemMapper);
+	private final ItemService itemService = new ItemService(itemStorage, userService, itemMapper, userMapper);
 	private final ItemController itemController = new ItemController(itemService);
 
 	@Test
 	void shareItTest() {
-		User user = new User();
+		UserDto user = new UserDto();
 		user.setName("User1");
 		user.setEmail("User1@mail.ru");
 
-		User saveUser = userController.createUser(user);
+		UserDto saveUser = userController.createUser(user);
 
 		assertAll("Проверка пользователя",
 				() -> assertEquals(1, saveUser.getId()),

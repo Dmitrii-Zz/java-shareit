@@ -10,6 +10,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.ArrayList;
@@ -23,10 +25,12 @@ public class ItemService {
     private final ItemRepository itemStorage;
     private final UserService userService;
     private final ItemMapper itemMapper;
+    private final UserMapper userMapper;
 
     public ItemDto createItem(ItemDto itemDto, long userId) {
         Item item = itemMapper.toItem(itemDto);
-        item.setOwner(userService.getUserById(userId));
+        User owner = userMapper.toUser(userService.getUserById(userId));
+        item.setOwner(owner);
         return itemMapper.toItemDto(itemStorage.createItem(item));
     }
 
