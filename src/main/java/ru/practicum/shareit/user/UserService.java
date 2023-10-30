@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.EmailDuplicateException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
