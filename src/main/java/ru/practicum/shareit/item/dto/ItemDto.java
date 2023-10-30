@@ -1,24 +1,30 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.user.User;
+import lombok.NoArgsConstructor;
 
-/**
- * TODO Sprint add-controllers.
- */
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @Data
+@NoArgsConstructor
 public class ItemDto {
-    private long id;
-    private String name;
-    private String description;
-    private boolean isAvailable;
-    private User owner;
-    private Long request;
 
-    public ItemDto(String name, String description, boolean isAvailable, Long request) {
+    private long id;
+
+    @NotBlank(message = "В запросе отсутствует имя вещи.")
+    private String name;
+
+    @NotBlank(message = "В запросе отсутствует описание вещи.")
+    private String description;
+
+    @NotNull(message = "В запросе отсутствует статус запроса к аренде.")
+    private Boolean available;
+
+    public ItemDto(long id, String name, String description, Boolean isAvailable) {
+        this.id = id;
         this.name = name;
         this.description = description;
-        this.isAvailable = isAvailable;
-        this.request = request;
+        this.available = isAvailable;
     }
 }

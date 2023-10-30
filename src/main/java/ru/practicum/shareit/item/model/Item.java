@@ -25,4 +25,10 @@ public class Item {
 
     private ItemRequest request;
 
+    public Item(String name, String description, Boolean available) {
+        this.name = name;
+        this.description = description;
+        this.available = available;
+    }
+
 }

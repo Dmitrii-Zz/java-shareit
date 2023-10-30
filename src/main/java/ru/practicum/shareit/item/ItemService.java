@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.CheckUserException;
 import ru.practicum.shareit.exceptions.ItemNotFoundException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
@@ -19,13 +20,15 @@ import java.util.stream.Collectors;
 public class ItemService {
     private final ItemRepository itemStorage;
     private final UserService userService;
+    private final ItemMapper itemMapper;
 
-    public Item createItem(Item item, long userId) {
+    public ItemDto createItem(ItemDto itemDto, long userId) {
+        Item item = itemMapper.toItem(itemDto);
         item.setOwner(userService.getUserById(userId));
-        return itemStorage.createItem(item);
+        return itemMapper.toItemDto(itemStorage.createItem(item));
     }
 
-    public Item updateItem(Item item, long userId, long itemId) {
+    public ItemDto updateItem(ItemDto itemDto, long userId, long itemId) {
         Item itemFromBd = itemStorage.getItemById(itemId);
         boolean checkUser = itemFromBd.getOwner().getId() == userId;
 
@@ -33,31 +36,31 @@ public class ItemService {
             throw new CheckUserException("Отсутствует доступ к вещи id = " + itemId);
         }
 
-        if (item.getName() != null) {
-            itemFromBd.setName(item.getName());
+        if (itemDto.getName() != null) {
+            itemFromBd.setName(itemDto.getName());
         }
 
-        if (item.getDescription() != null) {
-            itemFromBd.setDescription(item.getDescription());
+        if (itemDto.getDescription() != null) {
+            itemFromBd.setDescription(itemDto.getDescription());
         }
 
-        if (item.getAvailable() != null) {
-            itemFromBd.setAvailable(item.getAvailable());
+        if (itemDto.getAvailable() != null) {
+            itemFromBd.setAvailable(itemDto.getAvailable());
         }
 
-        return itemStorage.update(itemFromBd);
+        return itemMapper.toItemDto(itemStorage.update(itemFromBd));
     }
 
-    public Item getItemById(long id) {
+    public ItemDto getItemById(long id) {
 
         if (!itemStorage.findItemById(id)) {
             throw new ItemNotFoundException("Отсутствует вещь с id = " + id);
         }
 
-        return itemStorage.getItemById(id);
+        return itemMapper.toItemDto(itemStorage.getItemById(id));
     }
 
-    public List<Item> findAllUsersItems(long userId) {
+    public List<ItemDto> findAllUsersItems(long userId) {
 
         if (!userService.checkExistsUser(userId)) {
             throw new UserNotFoundException(String.format("Пользователь с id = %d не существует", userId));
@@ -66,10 +69,11 @@ public class ItemService {
         return itemStorage.getAllItem()
                 .stream()
                 .filter(item -> item.getOwner().getId() == userId)
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
-    public List<Item> searchItem(String text) {
+    public List<ItemDto> searchItem(String text) {
 
         if (text.isBlank()) {
             return new ArrayList<>();
@@ -81,6 +85,7 @@ public class ItemService {
                 .filter(Item::getAvailable)
                 .filter(item -> item.getName().toLowerCase().contains(searchText)
                              || item.getDescription().toLowerCase().contains(searchText))
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 }
