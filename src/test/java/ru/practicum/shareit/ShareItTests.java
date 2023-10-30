@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.item.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.*;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.repository.UserRepositoryImpl;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.util.HashMap;
 
