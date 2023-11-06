@@ -24,14 +24,13 @@ import java.util.stream.Collectors;
 public class ItemService {
     private final ItemRepository itemStorage;
     private final UserService userService;
-    private final ItemMapper itemMapper;
     private final UserMapper userMapper;
 
     public ItemDto createItem(ItemDto itemDto, long userId) {
-        Item item = itemMapper.toItem(itemDto);
+        Item item = ItemMapper.toItem(itemDto);
         User owner = userMapper.toUser(userService.getUserById(userId));
         item.setOwner(owner);
-        return itemMapper.toItemDto(itemStorage.createItem(item));
+        return ItemMapper.toItemDto(itemStorage.createItem(item));
     }
 
     public ItemDto updateItem(ItemDto itemDto, long userId, long itemId) {
@@ -54,7 +53,7 @@ public class ItemService {
             itemFromBd.setAvailable(itemDto.getAvailable());
         }
 
-        return itemMapper.toItemDto(itemStorage.update(itemFromBd));
+        return ItemMapper.toItemDto(itemStorage.update(itemFromBd));
     }
 
     public ItemDto getItemById(long id) {
@@ -63,7 +62,7 @@ public class ItemService {
             throw new ItemNotFoundException("Отсутствует вещь с id = " + id);
         }
 
-        return itemMapper.toItemDto(itemStorage.getItemById(id));
+        return ItemMapper.toItemDto(itemStorage.getItemById(id));
     }
 
     public List<ItemDto> findAllUsersItems(long userId) {
@@ -75,7 +74,7 @@ public class ItemService {
         return itemStorage.getAllItem()
                 .stream()
                 .filter(item -> item.getOwner().getId() == userId)
-                .map(itemMapper::toItemDto)
+                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
@@ -91,7 +90,7 @@ public class ItemService {
                 .filter(Item::getAvailable)
                 .filter(item -> item.getName().toLowerCase().contains(searchText)
                              || item.getDescription().toLowerCase().contains(searchText))
-                .map(itemMapper::toItemDto)
+                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 }
