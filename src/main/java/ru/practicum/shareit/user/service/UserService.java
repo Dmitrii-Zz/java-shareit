@@ -18,12 +18,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
-    private final UserMapper userMapper;
 
     public UserDto createUser(UserDto userDto) {
         validDublicateEmail(userDto);
-        User user = userMapper.toUser(userDto);
-        return userMapper.toUserDto(repository.createUser(user));
+        User user = UserMapper.toUser(userDto);
+        return UserMapper.toUserDto(repository.createUser(user));
     }
 
     public UserDto getUserById(long id) {
@@ -31,13 +30,13 @@ public class UserService {
             throw new UserNotFoundException("Пользователь с id = " + id + " не найден");
         }
 
-        return userMapper.toUserDto(repository.getUserById(id));
+        return UserMapper.toUserDto(repository.getUserById(id));
     }
 
     public List<UserDto> getAllUsers() {
         return repository.getAllUsers()
                 .stream()
-                .map(userMapper::toUserDto)
+                .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
@@ -54,7 +53,7 @@ public class UserService {
             updateUser.setName(userDto.getName());
         }
 
-        return userMapper.toUserDto(repository.updateUser(updateUser));
+        return UserMapper.toUserDto(repository.updateUser(updateUser));
     }
 
     public void deleteUser(long id) {
