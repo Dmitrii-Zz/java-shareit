@@ -4,13 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.repository.ItemRepositoryImpl;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.repository.UserRepositoryImpl;
 import ru.practicum.shareit.user.service.UserService;
@@ -22,17 +20,15 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class ShareItTests {
 	private final UserRepository userStorage = new UserRepositoryImpl(new HashMap<>());
-	private final UserMapper userMapper = new UserMapper();
-	private final UserService userService = new UserService(userStorage, userMapper);
+	private final UserService userService = new UserService(userStorage);
 	private final UserController userController = new UserController(userService);
-	private final ItemMapper itemMapper = new ItemMapper();
 	private final ItemRepository itemStorage = new ItemRepositoryImpl();
-	private final ItemService itemService = new ItemService(itemStorage, userService, itemMapper, userMapper);
+	private final ItemService itemService = new ItemService(itemStorage, userService);
 	private final ItemController itemController = new ItemController(itemService);
 
 	@Test
 	void shareItTest() {
-		UserDto user = new UserDto();
+		UserDto user = UserDto.builder().build();
 		user.setName("User1");
 		user.setEmail("User1@mail.ru");
 
@@ -43,7 +39,7 @@ class ShareItTests {
 				() -> assertEquals("User1", saveUser.getName()),
 				() -> assertEquals("User1@mail.ru", saveUser.getEmail()));
 
-		ItemDto itemDto = new ItemDto();
+		ItemDto itemDto = ItemDto.builder().build();
 		itemDto.setName("Item1");
 		itemDto.setDescription("Description Item1");
 		itemDto.setAvailable(true);
