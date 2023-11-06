@@ -24,11 +24,10 @@ import java.util.stream.Collectors;
 public class ItemService {
     private final ItemRepository itemStorage;
     private final UserService userService;
-    private final UserMapper userMapper;
 
     public ItemDto createItem(ItemDto itemDto, long userId) {
         Item item = ItemMapper.toItem(itemDto);
-        User owner = userMapper.toUser(userService.getUserById(userId));
+        User owner = UserMapper.toUser(userService.getUserById(userId));
         item.setOwner(owner);
         return ItemMapper.toItemDto(itemStorage.createItem(item));
     }
