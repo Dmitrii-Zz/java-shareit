@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.EmailDuplicateException;
@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserService {
     private final UserRepository repository;
 
     public UserDto createUser(UserDto userDto) {
         validDublicateEmail(userDto);
         User user = UserMapper.toUser(userDto);
-        return UserMapper.toUserDto(repository.createUser(user));
+        return UserMapper.toUserDto(repository.save(user));
     }
 
     public UserDto getUserById(long id) {
@@ -30,11 +30,11 @@ public class UserService {
             throw new UserNotFoundException("Пользователь с id = " + id + " не найден");
         }
 
-        return UserMapper.toUserDto(repository.getUserById(id));
+        return UserMapper.toUserDto(repository.getReferenceById(id));
     }
 
     public List<UserDto> getAllUsers() {
-        return repository.getAllUsers()
+        return repository.findAll()
                 .stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
@@ -43,7 +43,7 @@ public class UserService {
     public UserDto updateUser(UserDto userDto, long userId) {
         userDto.setId(userId);
         validDublicateEmail(userDto);
-        User updateUser = repository.getUserById(userId);
+        User updateUser = repository.getReferenceById(userId);
 
         if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
             updateUser.setEmail(userDto.getEmail());
@@ -53,19 +53,19 @@ public class UserService {
             updateUser.setName(userDto.getName());
         }
 
-        return UserMapper.toUserDto(repository.updateUser(updateUser));
+        return UserMapper.toUserDto(repository.save(updateUser));
     }
 
     public void deleteUser(long id) {
-        repository.deleteUser(id);
+        repository.deleteById(id);
     }
 
     public boolean checkExistsUser(long id) {
-        return repository.findUserByID(id);
+        return repository.findById(id).isPresent();
     }
 
     private void validDublicateEmail(UserDto user) {
-        boolean isEmailAvailable = repository.getAllUsers()
+        boolean isEmailAvailable = repository.findAll()
                 .stream()
                 .filter(u -> u.getId() != user.getId())
                 .noneMatch(u -> u.getEmail().equals(user.getEmail()));
