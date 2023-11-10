@@ -32,11 +32,11 @@ public class Item {
     @NotNull(message = "В запросе отсутствует статус запроса к аренде.")
     private Boolean available;
 
-    @Column(name = "owner_id")
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User owner;
 
-    @Column(name = "request_id")
     @ManyToOne
+    @JoinColumn
     private ItemRequest request;
 }
