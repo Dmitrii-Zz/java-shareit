@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+    @Column(name = "user_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -21,7 +22,7 @@ public class User {
     @NotBlank(message = "Имя не должно быть пустым.")
     private String name;
 
-    @Column(name = "user_email", nullable = false)
+    @Column(name = "user_email", nullable = false, unique = true)
     @NotBlank(message = "Отсутствует email.")
     @Email(message = "Введен некорректный адрес электронной почты.")
     private String email;
