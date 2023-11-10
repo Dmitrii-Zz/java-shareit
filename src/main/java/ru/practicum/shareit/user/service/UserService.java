@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.EmailDuplicateException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -20,7 +19,6 @@ public class UserService {
     private final UserRepository repository;
 
     public UserDto createUser(UserDto userDto) {
-        validDublicateEmail(userDto);
         User user = UserMapper.toUser(userDto);
         return UserMapper.toUserDto(repository.save(user));
     }
@@ -42,7 +40,6 @@ public class UserService {
 
     public UserDto updateUser(UserDto userDto, long userId) {
         userDto.setId(userId);
-        validDublicateEmail(userDto);
         User updateUser = repository.getReferenceById(userId);
 
         if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
@@ -62,16 +59,5 @@ public class UserService {
 
     public boolean checkExistsUser(long id) {
         return repository.findById(id).isPresent();
-    }
-
-    private void validDublicateEmail(UserDto user) {
-        boolean isEmailAvailable = repository.findAll()
-                .stream()
-                .filter(u -> u.getId() != user.getId())
-                .noneMatch(u -> u.getEmail().equals(user.getEmail()));
-
-        if (!isEmailAvailable) {
-            throw new EmailDuplicateException("email \"" + user.getEmail() + "\" занят.");
-        }
     }
 }
