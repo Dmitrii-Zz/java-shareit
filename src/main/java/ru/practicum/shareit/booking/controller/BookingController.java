@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
+import static ru.practicum.shareit.constatnt.Constants.USER_HEADER_ID;
 
 import java.util.List;
 
@@ -17,9 +18,10 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public BookingDto createBooking(@Validated @RequestBody BookingDto bookingDto) {
-        log.info("Запрос на создание аренды вещи {}.", bookingDto.getItem().getId());
-        return null;
+    public BookingDto createBooking(@Validated @RequestBody BookingDto bookingDto,
+                                    @RequestHeader(USER_HEADER_ID) long userId) {
+        log.info("Запрос на создание аренды вещи {} от юзера {}.", bookingDto.getItemId(), userId);
+        return bookingService.createBooking(bookingDto, userId);
     }
 
     @PatchMapping("/{bookingId}")
