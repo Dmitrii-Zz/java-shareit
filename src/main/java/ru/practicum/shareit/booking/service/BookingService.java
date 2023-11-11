@@ -3,15 +3,16 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoWithoutDate;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exceptions.ex.CheckAvailableItemException;
-import ru.practicum.shareit.exceptions.ex.CheckStartAndEndBookingException;
-import ru.practicum.shareit.exceptions.ex.UserNotFoundException;
+import ru.practicum.shareit.exceptions.ex.*;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,4 +46,25 @@ public class BookingService {
         return BookingMapper.toBookingDto(bookingStorage.save(booking));
     }
 
+    public BookingDtoWithoutDate addStatusBooking(long userId, long bookingId, boolean approved) {
+        Optional<Booking> optionalBooking = bookingStorage.findById(bookingId);
+
+        if (optionalBooking.isEmpty()) {
+            throw new BookingNotFoundException(String.format("Аренда с id = %d не найдена.", bookingId));
+        }
+
+        Booking booking = optionalBooking.get();
+
+        if (booking.getItem().getOwner().getId() != userId) {
+            throw new NoAccessItemException(String.format("Вещь с id = %d недоступна для аренды.", booking.getId()));
+        }
+
+        if (approved) {
+            booking.setStatus(BookingStatus.APPROVED);
+        } else {
+            booking.setStatus(BookingStatus.REJECTED);
+        }
+
+        return BookingMapper.toBookingDtoWithoutDate(bookingStorage.save(booking));
+    }
 }

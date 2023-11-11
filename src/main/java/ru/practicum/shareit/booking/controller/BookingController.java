@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoWithoutDate;
 import ru.practicum.shareit.booking.service.BookingService;
 import static ru.practicum.shareit.constatnt.Constants.USER_HEADER_ID;
 
@@ -25,11 +26,11 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto addStatusBooking(@RequestHeader(USER_HEADER_ID) long userId,
-                                       @RequestParam boolean approved,
-                                       @PathVariable long bookingId) {
+    public BookingDtoWithoutDate addStatusBooking(@RequestHeader(USER_HEADER_ID) long userId,
+                                                  @RequestParam boolean approved,
+                                                  @PathVariable long bookingId) {
         log.info("Установить статус {} для запроса {} от юзера {}.", approved, bookingId, userId);
-        return null;
+        return bookingService.addStatusBooking(userId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")

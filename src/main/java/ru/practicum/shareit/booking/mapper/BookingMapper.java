@@ -2,9 +2,12 @@ package ru.practicum.shareit.booking.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoWithoutDate;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.user.mapper.UserMapper;
+
+import java.time.ZoneOffset;
 
 @Component
 public class BookingMapper {
@@ -25,6 +28,16 @@ public class BookingMapper {
                 .itemId(booking.getItem().getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
+                .booker(UserMapper.toUserDto(booking.getBooker()))
+                .item(ItemMapper.toItemDto(booking.getItem()))
+                .status(booking.getStatus())
+                .build();
+    }
+
+    public static BookingDtoWithoutDate toBookingDtoWithoutDate(Booking booking) {
+        return BookingDtoWithoutDate.builder()
+                .id(booking.getId())
+                .itemId(booking.getItem().getId())
                 .booker(UserMapper.toUserDto(booking.getBooker()))
                 .item(ItemMapper.toItemDto(booking.getItem()))
                 .status(booking.getStatus())

@@ -39,4 +39,16 @@ public class ErrorHandler {
     public ErrorResponse handleCheckStartAndEndBookingException(final CheckStartAndEndBookingException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleBookingNotFountException(final BookingNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleNoAccessItemException(final NoAccessItemException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
