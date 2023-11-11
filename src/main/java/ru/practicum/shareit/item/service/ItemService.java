@@ -56,7 +56,6 @@ public class ItemService {
     }
 
     public ItemDto getItemById(long id) {
-
         if (itemStorage.findById(id).isEmpty()) {
             throw new ItemNotFoundException("Отсутствует вещь с id = " + id);
         }
@@ -91,5 +90,9 @@ public class ItemService {
                              || item.getDescription().toLowerCase().contains(searchText))
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    public boolean checkIsAvailableItem(long itemId) {
+        return getItemById(itemId).getAvailable();
     }
 }
