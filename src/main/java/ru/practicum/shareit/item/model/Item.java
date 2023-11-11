@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class Item {
 
+    @Column(name = "item_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
