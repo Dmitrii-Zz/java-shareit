@@ -42,7 +42,7 @@ public class BookingService {
         bookingDto.setItem(itemService.getItemById(bookingDto.getItemId()));
         bookingDto.setStatus(BookingStatus.WAITING);
         Booking booking = BookingMapper.toBooking(bookingDto);
-        return bookingDto;
+        return BookingMapper.toBookingDto(bookingStorage.save(booking));
     }
 
 }

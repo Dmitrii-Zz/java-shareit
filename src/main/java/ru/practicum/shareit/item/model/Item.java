@@ -33,8 +33,8 @@ public class Item {
     @NotNull(message = "В запросе отсутствует статус запроса к аренде.")
     private Boolean available;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User owner;
 
     @ManyToOne
