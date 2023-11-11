@@ -1,21 +1,33 @@
 package ru.practicum.shareit.booking.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
-
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Data
+@Builder
 public class BookingDto {
+
     private long id;
+
+    private long itemId;
+
+    @NotNull(message = "Отсутствует начальная точка отсчета.")
+    @FutureOrPresent
     private LocalDateTime start;
+
+    @NotNull(message = "Отсутствует конечная точка отсчета.")
+    @FutureOrPresent
     private LocalDateTime end;
-    private Item item;
-    private User booker;
-    private BookingStatus bookingStatus;
+
+    private UserDto booker;
+
+    private ItemDto item;
+
+    private BookingStatus status;
 }
