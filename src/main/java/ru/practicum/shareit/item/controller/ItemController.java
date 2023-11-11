@@ -9,6 +9,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import javax.validation.Valid;
 import java.util.List;
 
+import static ru.practicum.shareit.constatnt.Constants.USER_HEADER_ID;
+
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -17,14 +19,14 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDto createItem(@RequestHeader(USER_HEADER_ID) long userId,
                               @Valid @RequestBody ItemDto itemDto) {
         log.info("Запрос создания вещи юзера id = " + userId);
         return itemService.createItem(itemDto, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDto updateItem(@RequestHeader(USER_HEADER_ID) long userId,
                            @PathVariable long itemId,
                            @RequestBody ItemDto itemDto) {
         log.info("Обновление вещи пользователя id = " + userId);
@@ -38,7 +40,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemUser(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemDto> getAllItemUser(@RequestHeader(USER_HEADER_ID) long userId) {
         log.info("Запрос всех вещей юзера id = " + userId);
         return itemService.findAllUsersItems(userId);
     }

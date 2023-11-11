@@ -25,7 +25,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto addStatusBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+    public BookingDto addStatusBooking(@RequestHeader(USER_HEADER_ID) long userId,
                                        @RequestParam boolean approved,
                                        @PathVariable long bookingId) {
         log.info("Установить статус {} для запроса {} от юзера {}.", approved, bookingId, userId);
@@ -33,21 +33,21 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public BookingDto getBookingById(@RequestHeader("X-Sharer-User-Id") long userId,
+    public BookingDto getBookingById(@RequestHeader(USER_HEADER_ID) long userId,
                                      @PathVariable long bookingId) {
         log.info("Запрос информации об аренде {} от юзера {}.", bookingId, userId);
         return null;
     }
 
     @GetMapping
-    public List<BookingDto> findAllBookingByUserId(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<BookingDto> findAllBookingByUserId(@RequestHeader(USER_HEADER_ID) long userId,
                                                    @RequestParam(defaultValue = "ALL") String state) {
         log.info("Вернуть список аренды {} юзера {}", state, userId);
         return null;
     }
 
     @GetMapping("/owner")
-    public List<BookingDto> findAllBookingByOwnerId(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<BookingDto> findAllBookingByOwnerId(@RequestHeader(USER_HEADER_ID) long userId,
                                                    @RequestParam(defaultValue = "ALL") String state) {
         log.info("Вернуть список аренды {} юзера {}", state, userId);
         return null;
