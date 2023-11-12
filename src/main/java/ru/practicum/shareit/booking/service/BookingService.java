@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -8,6 +9,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.ex.*;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingService {
     private final BookingRepository bookingStorage;
     private final ItemService itemService;
@@ -31,6 +34,11 @@ public class BookingService {
         }
 
         userService.checkExistsUser(userId);
+        Item item = itemService.getItem(bookingDto.getItemId());
+        log.info("у вещи " + item.getId() + " пользователь - " + item.getOwner());
+        if (item.getOwner() != null && item.getOwner().getId() == userId) {
+            throw new CheckUserNotOwnerItemException("Нельзя взять свою вещь в аренду.");
+        }
 
         if (bookingDto.getStart().isAfter(bookingDto.getEnd()) || bookingDto.getStart().equals(bookingDto.getEnd())) {
             throw new CheckStartAndEndBookingException("Неверны даты начала и окончания аренды.");
@@ -79,17 +87,18 @@ public class BookingService {
             return bookingStorage.findAll().stream()
                     .filter(x -> x.getBooker().getId() == userId)
                     .map(BookingMapper::toBookingDto)
+                    .sorted((x, x1) -> x1.getStart().compareTo(x.getStart()))
                     .collect(Collectors.toList());
         }
-        try {
-            return bookingStorage.findAll().stream()
-                    .filter(x -> x.getBooker().getId() == userId)
-                    .filter(x -> x.getStatus().equals(BookingStatus.valueOf(state)))
-                    .map(BookingMapper::toBookingDto)
-                    .collect(Collectors.toList());
-        } catch (IllegalArgumentException e) {
-            throw new UnsuportedBookingStatusException("Unknown state: " + state);
-        }
+
+        BookingStatus bookingStatus = konvertBookingStatus(state);
+
+        return bookingStorage.findAll().stream()
+                .filter(x -> x.getBooker().getId() == userId)
+                .filter(x -> x.getStatus().equals(bookingStatus))
+                .map(BookingMapper::toBookingDto)
+                .sorted((x, x1) -> x1.getStart().compareTo(x.getStart()))
+                .collect(Collectors.toList());
     }
 
     public List<BookingDto> findAllBookingByOwnerId (long userId, String state) {
@@ -99,17 +108,18 @@ public class BookingService {
             return bookingStorage.findAll().stream()
                     .filter(x -> x.getItem().getOwner().getId() == userId)
                     .map(BookingMapper::toBookingDto)
+                    .sorted((x, x1) -> x1.getStart().compareTo(x.getStart()))
                     .collect(Collectors.toList());
         }
-        try {
-            return bookingStorage.findAll().stream()
-                    .filter(x -> x.getItem().getOwner().getId() == userId)
-                    .filter(x -> x.getStatus().equals(BookingStatus.valueOf(state)))
-                    .map(BookingMapper::toBookingDto)
-                    .collect(Collectors.toList());
-        } catch (IllegalArgumentException e) {
-            throw new UnsuportedBookingStatusException("Unknown state: " + state);
-        }
+
+        BookingStatus bookingStatus = konvertBookingStatus(state);
+
+        return bookingStorage.findAll().stream()
+                .filter(x -> x.getItem().getOwner().getId() == userId)
+                .filter(x -> x.getStatus().equals(bookingStatus))
+                .map(BookingMapper::toBookingDto)
+                .sorted((x, x1) -> x1.getStart().compareTo(x.getStart()))
+                .collect(Collectors.toList());
     }
 
     private Booking findBookingById(long bookingId) {
@@ -120,5 +130,30 @@ public class BookingService {
         }
 
         return optionalBooking.get();
+    }
+
+    private BookingStatus konvertBookingStatus(String state) {
+        BookingStatus bookingStatus;
+        switch (state) {
+            case ("CURRENT"):
+                bookingStatus = BookingStatus.APPROVED;
+                break;
+            case ("PAST"):
+                bookingStatus = BookingStatus.CANCELED;
+                break;
+            case ("FUTURE"):
+                bookingStatus = BookingStatus.WAITING;
+                break;
+            case ("WAITING"):
+                bookingStatus = BookingStatus.WAITING;
+                break;
+            case ("REJECTED"):
+                bookingStatus = BookingStatus.REJECTED;
+                break;
+            default:
+                throw new UnsuportedBookingStatusException("Unknown state: " + state);
+        }
+
+        return bookingStatus;
     }
 }
