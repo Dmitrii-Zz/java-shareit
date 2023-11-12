@@ -64,11 +64,7 @@ public class ItemService {
     }
 
     public List<ItemDto> findAllUsersItems(long userId) {
-
-        if (!userService.checkExistsUser(userId)) {
-            throw new UserNotFoundException(String.format("Пользователь с id = %d не существует", userId));
-        }
-
+        userService.checkExistsUser(userId);
         return itemStorage.findAll()
                 .stream()
                 .filter(item -> item.getOwner().getId() == userId)

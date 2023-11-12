@@ -23,12 +23,9 @@ public class UserService {
         return UserMapper.toUserDto(repository.save(user));
     }
 
-    public UserDto getUserById(long id) {
-        if (!checkExistsUser(id)) {
-            throw new UserNotFoundException("Пользователь с id = " + id + " не найден");
-        }
-
-        return UserMapper.toUserDto(repository.getReferenceById(id));
+    public UserDto getUserById(long userId) {
+        checkExistsUser(userId);
+        return UserMapper.toUserDto(repository.getReferenceById(userId));
     }
 
     public List<UserDto> getAllUsers() {
@@ -57,7 +54,9 @@ public class UserService {
         repository.deleteById(id);
     }
 
-    public boolean checkExistsUser(long id) {
-        return repository.findById(id).isPresent();
+    public void checkExistsUser(long userId) {
+        if (repository.findById(userId).isEmpty()) {
+            throw new UserNotFoundException(String.format("Пользователь с id = %d не существует", userId));
+        }
     }
 }

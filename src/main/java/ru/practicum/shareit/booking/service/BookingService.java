@@ -11,7 +11,9 @@ import ru.practicum.shareit.exceptions.ex.*;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +30,7 @@ public class BookingService {
                     String.format("Вещь с id %d недоступна для аренды", bookingDto.getId()));
         }
 
-        boolean isExistsUser = userService.checkExistsUser(userId);
-
-        if (!isExistsUser) {
-            throw new UserNotFoundException(String.format("Пользователь с id = %d не существует", userId));
-        }
+        userService.checkExistsUser(userId);
 
         if (bookingDto.getStart().isAfter(bookingDto.getEnd()) || bookingDto.getStart().equals(bookingDto.getEnd())) {
             throw new CheckStartAndEndBookingException("Неверны даты начала и окончания аренды.");
@@ -71,6 +69,46 @@ public class BookingService {
 
         throw new NoAccessItemException(
                 String.format("Вещь с id = %d недоступна для юзера id = %d.", booking.getItem().getId(), userId));
+    }
+
+    public List<BookingDto> findAllBookingByUserId(long userId, String state) {
+        userService.checkExistsUser(userId);
+
+        if (state.equals("ALL")) {
+            return bookingStorage.findAll().stream()
+                    .filter(x -> x.getBooker().getId() == userId)
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+        }
+        try {
+            return bookingStorage.findAll().stream()
+                    .filter(x -> x.getBooker().getId() == userId)
+                    .filter(x -> x.getStatus().equals(BookingStatus.valueOf(state)))
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            throw new UnsuportedBookingStatusException("Unknown state: " + state);
+        }
+    }
+
+    public List<BookingDto> findAllBookingByOwnerId (long userId, String state) {
+        userService.checkExistsUser(userId);
+
+        if (state.equals("ALL")) {
+            return bookingStorage.findAll().stream()
+                    .filter(x -> x.getItem().getOwner().getId() == userId)
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+        }
+        try {
+            return bookingStorage.findAll().stream()
+                    .filter(x -> x.getItem().getOwner().getId() == userId)
+                    .filter(x -> x.getStatus().equals(BookingStatus.valueOf(state)))
+                    .map(BookingMapper::toBookingDto)
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            throw new UnsuportedBookingStatusException("Unknown state: " + state);
+        }
     }
 
     private Booking findBookingById(long bookingId) {
