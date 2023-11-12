@@ -97,6 +97,10 @@ public class ItemService {
         return getItemById(itemId).getAvailable();
     }
 
+    public Item getItem(long id) {
+        return itemStorage.getReferenceById(id);
+    }
+
     public CommentDto addComment(CommentDto commentDto, long itemId, long userId) {
         Comment comment = CommentMapper.toComment(commentDto);
         comment.setItem(ItemMapper.toItem(getItemById(itemId)));
