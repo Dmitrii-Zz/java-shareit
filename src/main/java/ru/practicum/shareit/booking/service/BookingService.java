@@ -62,6 +62,7 @@ public class BookingService {
 
     public BookingDto getBookingById(long userId, long bookingId) {
         Booking booking = findBookingById(bookingId);
+        userService.checkExistsUser(userId);
 
         if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
             return BookingMapper.toBookingDto(bookingStorage.getReferenceById(bookingId));
