@@ -36,7 +36,7 @@ public class BookingController {
     public BookingDto getBookingById(@RequestHeader(USER_HEADER_ID) long userId,
                                      @PathVariable long bookingId) {
         log.info("Запрос информации об аренде {} от юзера {}.", bookingId, userId);
-        return null;
+        return bookingService.getBookingById(userId, bookingId);
     }
 
     @GetMapping

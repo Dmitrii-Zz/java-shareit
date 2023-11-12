@@ -46,16 +46,11 @@ public class BookingService {
     }
 
     public BookingDto addStatusBooking(long userId, long bookingId, boolean approved) {
-        Optional<Booking> optionalBooking = bookingStorage.findById(bookingId);
-
-        if (optionalBooking.isEmpty()) {
-            throw new BookingNotFoundException(String.format("Аренда с id = %d не найдена.", bookingId));
-        }
-
-        Booking booking = optionalBooking.get();
+        Booking booking = findBookingById(bookingId);
 
         if (booking.getItem().getOwner().getId() != userId) {
-            throw new NoAccessItemException(String.format("Вещь с id = %d недоступна для аренды.", booking.getId()));
+            throw new NoAccessItemException(
+                    String.format("Вещь с id = %d недоступна для юзера id = %d.", booking.getId(), userId));
         }
 
         if (approved) {
@@ -65,5 +60,26 @@ public class BookingService {
         }
 
         return BookingMapper.toBookingDto(bookingStorage.save(booking));
+    }
+
+    public BookingDto getBookingById(long userId, long bookingId) {
+        Booking booking = findBookingById(bookingId);
+
+        if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
+            return BookingMapper.toBookingDto(bookingStorage.getReferenceById(bookingId));
+        }
+
+        throw new NoAccessItemException(
+                String.format("Вещь с id = %d недоступна для юзера id = %d.", booking.getItem().getId(), userId));
+    }
+
+    private Booking findBookingById(long bookingId) {
+        Optional<Booking> optionalBooking = bookingStorage.findById(bookingId);
+
+        if (optionalBooking.isEmpty()) {
+            throw new BookingNotFoundException(String.format("Аренда с id = %d не найдена.", bookingId));
+        }
+
+        return optionalBooking.get();
     }
 }
