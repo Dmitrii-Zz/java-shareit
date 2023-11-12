@@ -57,4 +57,10 @@ public class ErrorHandler {
     public ErrorResponse handleUnsupportedBookingStatusException(final UnsuportedBookingStatusException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCheckUserNotOwnerItemException(final CheckUserNotOwnerItemException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
