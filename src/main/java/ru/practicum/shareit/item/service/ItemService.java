@@ -5,15 +5,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ex.CheckUserException;
 import ru.practicum.shareit.exceptions.ex.ItemNotFoundException;
-import ru.practicum.shareit.exceptions.ex.UserNotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentsRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +28,7 @@ import java.util.stream.Collectors;
 public class ItemService {
     private final ItemRepository itemStorage;
     private final UserService userService;
+    private final CommentsRepository commentStorage;
 
     public ItemDto createItem(ItemDto itemDto, long userId) {
         Item item = ItemMapper.toItem(itemDto);
@@ -90,5 +95,13 @@ public class ItemService {
 
     public boolean checkIsAvailableItem(long itemId) {
         return getItemById(itemId).getAvailable();
+    }
+
+    public CommentDto addComment(CommentDto commentDto, long itemId, long userId) {
+        Comment comment = CommentMapper.toComment(commentDto);
+        comment.setItem(ItemMapper.toItem(getItemById(itemId)));
+        comment.setAuthor(UserMapper.toUser(userService.getUserById(userId)));
+        comment.setCreated(LocalDateTime.now());
+        return CommentMapper.toCommentDto(commentStorage.save(comment));
     }
 }
