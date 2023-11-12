@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingDtoWithoutDate;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -46,7 +45,7 @@ public class BookingService {
         return BookingMapper.toBookingDto(bookingStorage.save(booking));
     }
 
-    public BookingDtoWithoutDate addStatusBooking(long userId, long bookingId, boolean approved) {
+    public BookingDto addStatusBooking(long userId, long bookingId, boolean approved) {
         Optional<Booking> optionalBooking = bookingStorage.findById(bookingId);
 
         if (optionalBooking.isEmpty()) {
@@ -65,6 +64,6 @@ public class BookingService {
             booking.setStatus(BookingStatus.REJECTED);
         }
 
-        return BookingMapper.toBookingDtoWithoutDate(bookingStorage.save(booking));
+        return BookingMapper.toBookingDto(bookingStorage.save(booking));
     }
 }
