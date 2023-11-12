@@ -51,4 +51,10 @@ public class ErrorHandler {
     public ErrorResponse handleNoAccessItemException(final NoAccessItemException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleUnsupportedBookingStatusException(final UnsuportedBookingStatusException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
