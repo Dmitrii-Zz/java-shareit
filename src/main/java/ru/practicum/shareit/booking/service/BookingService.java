@@ -36,6 +36,7 @@ public class BookingService {
         userService.checkExistsUser(userId);
         Item item = itemService.getItem(bookingDto.getItemId());
         log.info("у вещи " + item.getId() + " пользователь - " + item.getOwner());
+
         if (item.getOwner() != null && item.getOwner().getId() == userId) {
             throw new CheckUserNotOwnerItemException("Нельзя взять свою вещь в аренду.");
         }
@@ -82,41 +83,50 @@ public class BookingService {
 
     public List<BookingDto> findAllBookingByUserId(long userId, String state) {
         userService.checkExistsUser(userId);
+        List<Booking> bookings;
 
-        if (state.equals("ALL")) {
-            return bookingStorage.findAll().stream()
-                    .filter(x -> x.getBooker().getId() == userId)
-                    .map(BookingMapper::toBookingDto)
-                    .sorted((x, x1) -> x1.getStart().compareTo(x.getStart()))
-                    .collect(Collectors.toList());
+        switch (state) {
+            case "ALL":
+                bookings = bookingStorage.getAllBookingByUSerId(userId);
+                break;
+            case "PAST":
+                bookings = bookingStorage.getPastBookingByUserId(userId);
+                break;
+            case "FUTURE":
+                bookings = bookingStorage.getFutureBookingByUserId(userId);
+                break;
+            default:
+                bookings = bookingStorage.getBookingWithStatusByUserId(userId, konvertBookingStatus(state));
+                break;
         }
 
-        BookingStatus bookingStatus = konvertBookingStatus(state);
-
-        return bookingStorage.findAll().stream()
-                .filter(x -> x.getBooker().getId() == userId)
-                .filter(x -> x.getStatus().equals(bookingStatus))
-                .map(BookingMapper::toBookingDto)
-                .sorted((x, x1) -> x1.getStart().compareTo(x.getStart()))
-                .collect(Collectors.toList());
+        return getListBookingDto(bookings);
     }
 
-    public List<BookingDto> findAllBookingByOwnerId (long userId, String state) {
+    public List<BookingDto> findAllBookingByOwnerId(long userId, String state) {
         userService.checkExistsUser(userId);
+        List<Booking> bookings;
 
-        if (state.equals("ALL")) {
-            return bookingStorage.findAll().stream()
-                    .filter(x -> x.getItem().getOwner().getId() == userId)
-                    .map(BookingMapper::toBookingDto)
-                    .sorted((x, x1) -> x1.getStart().compareTo(x.getStart()))
-                    .collect(Collectors.toList());
+        switch (state) {
+            case "ALL":
+                bookings = bookingStorage.getAllBookingByOwnerId(userId);
+                break;
+            case "PAST":
+                bookings = bookingStorage.getPastBookingByOwnerId(userId);
+                break;
+            case "FUTURE":
+                bookings = bookingStorage.getFutureBookingByOwnerId(userId);
+                break;
+            default:
+                bookings = bookingStorage.getBookingWithStatusByOwnerId(userId, konvertBookingStatus(state));
+                break;
         }
 
-        BookingStatus bookingStatus = konvertBookingStatus(state);
+        return getListBookingDto(bookings);
+    }
 
-        return bookingStorage.findAll().stream()
-                .filter(x -> x.getItem().getOwner().getId() == userId)
-                .filter(x -> x.getStatus().equals(bookingStatus))
+    private List<BookingDto> getListBookingDto(List<Booking> bookings) {
+        return bookings.stream()
                 .map(BookingMapper::toBookingDto)
                 .sorted((x, x1) -> x1.getStart().compareTo(x.getStart()))
                 .collect(Collectors.toList());
@@ -134,15 +144,10 @@ public class BookingService {
 
     private BookingStatus konvertBookingStatus(String state) {
         BookingStatus bookingStatus;
+
         switch (state) {
             case ("CURRENT"):
                 bookingStatus = BookingStatus.APPROVED;
-                break;
-            case ("PAST"):
-                bookingStatus = BookingStatus.CANCELED;
-                break;
-            case ("FUTURE"):
-                bookingStatus = BookingStatus.WAITING;
                 break;
             case ("WAITING"):
                 bookingStatus = BookingStatus.WAITING;
