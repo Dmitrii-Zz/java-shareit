@@ -47,7 +47,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNoAccessItemException(final NoAccessItemException e) {
         return new ErrorResponse(e.getMessage());
     }
@@ -59,7 +59,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleCheckUserNotOwnerItemException(final CheckUserNotOwnerItemException e) {
         return new ErrorResponse(e.getMessage());
     }
