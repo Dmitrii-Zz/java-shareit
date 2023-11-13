@@ -70,11 +70,7 @@ public class ItemService {
 
     public List<ItemDto> findAllUsersItems(long userId) {
         userService.checkExistsUser(userId);
-        return itemStorage.findAll()
-                .stream()
-                .filter(item -> item.getOwner().getId() == userId)
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return getListItemDto(itemStorage.findAllUsersItems(userId));
     }
 
     public List<ItemDto> searchItem(String text) {
@@ -83,12 +79,11 @@ public class ItemService {
             return new ArrayList<>();
         }
 
-        String searchText = text.toLowerCase().trim();
-        return itemStorage.findAll()
-                .stream()
-                .filter(Item::getAvailable)
-                .filter(item -> item.getName().toLowerCase().contains(searchText)
-                             || item.getDescription().toLowerCase().contains(searchText))
+        return getListItemDto(itemStorage.search(text.toLowerCase().trim()));
+    }
+
+    private List<ItemDto> getListItemDto(List<Item> items) {
+        return items.stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
