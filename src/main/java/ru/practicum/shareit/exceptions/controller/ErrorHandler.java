@@ -63,4 +63,10 @@ public class ErrorHandler {
     public ErrorResponse handleCheckUserNotOwnerItemException(final CheckUserNotOwnerItemException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCanNotBeChangedException(final CanNotBeChangedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }

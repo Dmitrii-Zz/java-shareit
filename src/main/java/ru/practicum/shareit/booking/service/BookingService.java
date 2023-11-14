@@ -60,6 +60,10 @@ public class BookingService {
                     String.format("Вещь с id = %d недоступна для юзера id = %d.", booking.getId(), userId));
         }
 
+        if (booking.getStatus().equals(BookingStatus.APPROVED) || booking.getStatus().equals(BookingStatus.REJECTED)) {
+            throw new CanNotBeChangedException("Нельзя изменить статус у аренды id = " + booking.getId());
+        }
+
         if (approved) {
             booking.setStatus(BookingStatus.APPROVED);
         } else {
