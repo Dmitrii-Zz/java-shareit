@@ -161,6 +161,7 @@ public class ItemService {
 
     public boolean checkIsAvailableItem(long itemId) {
         Optional<Item> optionalItem = itemStorage.findById(itemId);
+
         if (optionalItem.isEmpty()) {
             throw new ItemNotFoundException("Отсутствует вещь с id = " + itemId);
         }

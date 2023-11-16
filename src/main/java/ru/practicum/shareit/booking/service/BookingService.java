@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -20,13 +19,20 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class BookingService {
     private final BookingRepository bookingStorage;
     private final ItemService itemService;
     private final UserService userService;
 
     public BookingDto createBooking(BookingDto bookingDto, long userId) {
+
+        if (bookingDto.getStart().isAfter(bookingDto.getEnd())
+                || bookingDto.getStart().equals(bookingDto.getEnd())) {
+            throw new CheckStartAndEndBookingException("Неверны даты начала и окончания аренды.");
+        }
+
+        userService.checkExistsUser(userId);
+
         boolean isAvailableItem = itemService.checkIsAvailableItem(bookingDto.getItemId());
 
         if (!isAvailableItem) {
@@ -34,23 +40,18 @@ public class BookingService {
                     String.format("Вещь с id %d недоступна для аренды", bookingDto.getId()));
         }
 
-        userService.checkExistsUser(userId);
         Item item = itemService.getItem(bookingDto.getItemId());
-        log.info("у вещи " + item.getId() + " пользователь - " + item.getOwner());
 
         if (item.getOwner() != null && item.getOwner().getId() == userId) {
             throw new CheckUserNotOwnerItemException("Нельзя взять свою вещь в аренду.");
         }
 
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd()) || bookingDto.getStart().equals(bookingDto.getEnd())) {
-            throw new CheckStartAndEndBookingException("Неверны даты начала и окончания аренды.");
-        }
-
         bookingDto.setBooker(userService.getUserById((userId)));
         bookingDto.setItem(itemService.getItemById(bookingDto.getItemId(), userId));
         bookingDto.setStatus(BookingStatus.WAITING);
-        Booking booking = BookingMapper.toBooking(bookingDto);
-        return BookingMapper.toBookingDto(bookingStorage.save(booking));
+
+        return BookingMapper.toBookingDto(
+                bookingStorage.save(BookingMapper.toBooking(bookingDto)));
     }
 
     public BookingDto addStatusBooking(long userId, long bookingId, boolean approved) {
@@ -58,10 +59,11 @@ public class BookingService {
 
         if (booking.getItem().getOwner().getId() != userId) {
             throw new NoAccessItemException(
-                    String.format("Вещь с id = %d недоступна для юзера id = %d.", booking.getId(), userId));
+                    String.format("Вещь id = %d недоступна для юзера id = %d.", booking.getId(), userId));
         }
 
-        if (booking.getStatus().equals(BookingStatus.APPROVED) || booking.getStatus().equals(BookingStatus.REJECTED)) {
+        if (booking.getStatus().equals(BookingStatus.APPROVED)
+                || booking.getStatus().equals(BookingStatus.REJECTED)) {
             throw new CanNotBeChangedException("Нельзя изменить статус у аренды id = " + booking.getId());
         }
 
@@ -75,10 +77,11 @@ public class BookingService {
     }
 
     public BookingDto getBookingById(long userId, long bookingId) {
-        Booking booking = findBookingById(bookingId);
         userService.checkExistsUser(userId);
+        Booking booking = findBookingById(bookingId);
 
-        if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
+        if (booking.getBooker().getId() == userId
+                || booking.getItem().getOwner().getId() == userId) {
             return BookingMapper.toBookingDto(bookingStorage.getReferenceById(bookingId));
         }
 
@@ -134,7 +137,7 @@ public class BookingService {
                 bookings = bookingStorage.getBookingWithStatusByOwnerId(userId, konvertBookingStatus(state));
                 break;
         }
-        log.info("state: " + state + " кол-во: " + bookings.size());
+
         return getListBookingDto(bookings);
     }
 
@@ -156,22 +159,10 @@ public class BookingService {
     }
 
     private BookingStatus konvertBookingStatus(String state) {
-        BookingStatus bookingStatus;
-
-        switch (state) {
-            case ("CURRENT"):
-                bookingStatus = BookingStatus.APPROVED;
-                break;
-            case ("WAITING"):
-                bookingStatus = BookingStatus.WAITING;
-                break;
-            case ("REJECTED"):
-                bookingStatus = BookingStatus.REJECTED;
-                break;
-            default:
-                throw new UnsuportedBookingStatusException("Unknown state: " + state);
+        try {
+            return BookingStatus.valueOf(state);
+        } catch (RuntimeException e) {
+            throw new UnsuportedBookingStatusException("Unknown state: " + state);
         }
-
-        return bookingStatus;
     }
 }

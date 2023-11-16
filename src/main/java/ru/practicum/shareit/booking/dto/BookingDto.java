@@ -15,6 +15,7 @@ public class BookingDto {
 
     private long id;
 
+    @NotNull(message = "Отсутствует ИД вещи в запросе.")
     private long itemId;
 
     @NotNull(message = "Отсутствует начальная точка отсчета.")
