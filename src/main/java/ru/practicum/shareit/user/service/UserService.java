@@ -36,7 +36,7 @@ public class UserService {
     }
 
     public UserDto updateUser(UserDto userDto, long userId) {
-        userDto.setId(userId);
+        checkExistsUser(userId);
         User updateUser = repository.getReferenceById(userId);
 
         if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
