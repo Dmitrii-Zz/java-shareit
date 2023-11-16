@@ -69,4 +69,10 @@ public class ErrorHandler {
     public ErrorResponse handleCanNotBeChangedException(final CanNotBeChangedException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNoAccessItemException(final NoAccessCommentException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
