@@ -79,7 +79,7 @@ public class ItemService {
         log.info("Владелец вещи id = " + item.getOwner().getId() + ", userId = " + userId);
         items.add(item);
         log.info("Начинаем искать комменты для вещи " + itemId);
-        List<CommentDto> comments = commentStorage.getCommentsByItemId(itemId).stream()
+        List<CommentDto> comments = commentStorage.findByItemId(itemId).stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
         log.info("Нашли комментов " + comments.size());
@@ -96,7 +96,7 @@ public class ItemService {
 
     public List<ItemOwnerDto> findAllUsersItems(long userId) {
         userService.checkExistsUser(userId);
-        List<Item> items = itemStorage.findAllUsersItems(userId);
+        List<Item> items = itemStorage.findByOwnerId(userId);
         return buildListItemOwnerDto(items);
     }
 
@@ -106,7 +106,7 @@ public class ItemService {
         for (Item item : items) {
             ItemOwnerDto itemOwnerDto = ItemMapper.toItemOwnerDto(item);
             log.info("вещь - " + itemOwnerDtos);
-            List<Booking> rawBookings = bookingStorage.getBookingByItemId(item.getId());
+            List<Booking> rawBookings = bookingStorage.findByItemId(item.getId());
             log.info("Нашлось аренд для вещи: " + item.getId() + ", " + rawBookings);
             List<Booking> bookings = rawBookings.stream()
                     .filter(x -> !x.getStatus().equals(BookingStatus.REJECTED))
@@ -176,7 +176,7 @@ public class ItemService {
         Comment comment = CommentMapper.toComment(commentDto);
         boolean isBooking = false;
 
-        for (Booking booking : bookingStorage.getPastBookingByUserId(userId)) {
+        for (Booking booking : bookingStorage.findByBookerIdAndEndBefore(userId, LocalDateTime.now())) {
             if (booking.getItem().getId() == itemId) {
                 log.info("Юзер " + userId + " брал в аренду вещь " + itemId);
                 isBooking = true;

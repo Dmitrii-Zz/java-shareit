@@ -7,8 +7,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.user.mapper.UserMapper;
 
-import java.time.ZoneOffset;
-
 @Component
 public class BookingMapper {
 

@@ -13,6 +13,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -91,20 +92,20 @@ public class BookingService {
 
         switch (state) {
             case "ALL":
-                bookings = bookingStorage.getAllBookingByUSerId(userId);
+                bookings = bookingStorage.findByBookerId(userId);
                 break;
             case "PAST":
-                bookings = bookingStorage.getPastBookingByUserId(userId);
+                bookings = bookingStorage.findByBookerIdAndEndBefore(userId, LocalDateTime.now());
                 break;
             case "FUTURE":
-                bookings = bookingStorage.getFutureBookingByUserId(userId);
+                bookings = bookingStorage.findAllByBookerIdAndStartAfter(userId, LocalDateTime.now());
                 break;
             case "CURRENT":
                 bookings = bookingStorage.getBookingCurrentByUserId
                         (userId, BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
                 break;
             default:
-                bookings = bookingStorage.getBookingWithStatusByUserId(userId, konvertBookingStatus(state));
+                bookings = bookingStorage.findByBookerIdAndStatus(userId, konvertBookingStatus(state));
                 break;
         }
 
