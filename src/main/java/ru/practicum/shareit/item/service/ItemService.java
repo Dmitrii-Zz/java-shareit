@@ -1,13 +1,11 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.ex.CheckUserException;
 import ru.practicum.shareit.exceptions.ex.ItemNotFoundException;
 import ru.practicum.shareit.exceptions.ex.NoAccessCommentException;
@@ -31,7 +29,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 @AllArgsConstructor
 public class ItemService {
     private final ItemRepository itemStorage;
@@ -50,9 +47,8 @@ public class ItemService {
 
         checkExistItem(itemId);
         Item itemFromBd = itemStorage.getReferenceById(itemId);
-        boolean checkUser = itemFromBd.getOwner().getId() == userId;
 
-        if (!checkUser) {
+        if (!(itemFromBd.getOwner().getId() == userId)) {
             throw new CheckUserException("Отсутствует доступ к вещи id = " + itemId);
         }
 
@@ -73,20 +69,19 @@ public class ItemService {
 
     public ItemDto getItemById(long itemId, long userId) {
         checkExistItem(itemId);
+        userService.checkExistsUser(userId);
 
         List<Item> items = new ArrayList<>();
         Item item = itemStorage.getReferenceById(itemId);
-        log.info("Владелец вещи id = " + item.getOwner().getId() + ", userId = " + userId);
         items.add(item);
-        log.info("Начинаем искать комменты для вещи " + itemId);
+
         List<CommentDto> comments = commentStorage.findByItemId(itemId).stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
-        log.info("Нашли комментов " + comments.size());
-        ItemOwnerDto itemOwnerDto = buildListItemOwnerDto(items).get(0);
-        itemOwnerDto.setComments(comments);
 
-        if (item.getOwner().getId() == userId) {
+         if (item.getOwner().getId() == userId) {
+            ItemOwnerDto itemOwnerDto = buildListItemOwnerDto(items).get(0);
+            itemOwnerDto.setComments(comments);
             return ItemMapper.toItemDto(itemOwnerDto);
         } else {
             ItemDto itemDto = ItemMapper.toItemDto(item);
@@ -106,9 +101,10 @@ public class ItemService {
 
         for (Item item : items) {
             ItemOwnerDto itemOwnerDto = ItemMapper.toItemOwnerDto(item);
-            List<Booking> rawBookings = bookingStorage.findByItemId(item.getId());
+            List<Booking> rawBookings =
+                    bookingStorage.findByItemIdAndStatusIsNot(item.getId(), BookingStatus.REJECTED);
+
             List<Booking> bookings = rawBookings.stream()
-                    .filter(x -> !x.getStatus().equals(BookingStatus.REJECTED))
                     .filter(x -> x.getStart().isAfter(LocalDateTime.now()))
                     .sorted((x, x1) -> x.getStart().compareTo(x1.getStart()))
                     .collect(Collectors.toList());
@@ -118,16 +114,13 @@ public class ItemService {
             }
 
             bookings = rawBookings.stream()
-                    .filter(x -> !x.getStatus().equals(BookingStatus.REJECTED))
-                    .filter(x -> x.getEnd().isAfter(LocalDateTime.now()) && x.getStart().isBefore(LocalDateTime.now()))
+                    .filter(x -> x.getEnd().isAfter(LocalDateTime.now()) &&
+                                 x.getStart().isBefore(LocalDateTime.now()))
                     .sorted((x, x1) -> x1.getEnd().compareTo(x.getEnd()))
                     .collect(Collectors.toList());
 
-            log.info("bookings после отбора - " + bookings);
-
             if (bookings.size() == 0) {
                 bookings = rawBookings.stream()
-                        .filter(x -> !x.getStatus().equals(BookingStatus.REJECTED))
                         .filter(x -> x.getEnd().isBefore(LocalDateTime.now()))
                         .sorted((x, x1) -> x1.getEnd().compareTo(x.getEnd()))
                         .collect(Collectors.toList());
@@ -139,6 +132,7 @@ public class ItemService {
 
             itemOwnerDtos.add(itemOwnerDto);
         }
+
         return itemOwnerDtos;
     }
 
@@ -148,11 +142,8 @@ public class ItemService {
             return new ArrayList<>();
         }
 
-        return getListItemDto(itemStorage.search(text.toLowerCase().trim()));
-    }
-
-    private List<ItemDto> getListItemDto(List<Item> items) {
-        return items.stream()
+        return itemStorage.search(text.toLowerCase().trim())
+                .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }

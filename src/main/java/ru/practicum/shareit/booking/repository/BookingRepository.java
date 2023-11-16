@@ -65,6 +65,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
            "and b.end < localtimestamp")
     Optional<List<Booking>> getBookingItemWhichTookUser(long itemId, long userId);
 
-    List<Booking> findByItemId(long itemId);
+    List<Booking> findByItemIdAndStatusIsNot(long itemId, BookingStatus status);
 
 }
