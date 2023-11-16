@@ -13,10 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 //import ru.practicum.shareit.user.repository.UserRepository;
 //import ru.practicum.shareit.user.service.UserService;
 
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 @Disabled
 @SpringBootTest
 class ShareItTests {

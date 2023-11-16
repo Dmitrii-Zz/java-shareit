@@ -104,8 +104,8 @@ public class BookingService {
                 bookings = bookingStorage.findAllByBookerIdAndStartAfter(userId, LocalDateTime.now());
                 break;
             case "CURRENT":
-                bookings = bookingStorage.getBookingCurrentByUserId
-                        (userId, BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
+                bookings = bookingStorage.getBookingCurrentByUserId(userId,
+                        BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
                 break;
             default:
                 bookings = bookingStorage.findByBookerIdAndStatus(userId, konvertBookingStatus(state));
@@ -130,8 +130,8 @@ public class BookingService {
                 bookings = bookingStorage.getFutureBookingByOwnerId(userId);
                 break;
             case "CURRENT":
-                bookings = bookingStorage.getBookingCurrentByOwnerId
-                        (userId, BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
+                bookings = bookingStorage.getBookingCurrentByOwnerId(userId,
+                        BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
                 break;
             default:
                 bookings = bookingStorage.getBookingWithStatusByOwnerId(userId, konvertBookingStatus(state));
