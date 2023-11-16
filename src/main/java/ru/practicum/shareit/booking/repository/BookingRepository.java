@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
+import java.awt.print.Book;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -29,6 +30,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> getBookingWithStatusByUserId(long userId, BookingStatus state);
 
     @Query("select b from Booking b " +
+            "where user_id = ?1 " +
+            "and (b.status = ?2 or b.status = ?3 or b.status = ?4)" +
+            "and (b.end > localtimestamp and b.start < localtimestamp)")
+    List<Booking> getBookingCurrentByUserId(
+            long userId, BookingStatus waiting, BookingStatus rejected, BookingStatus current);
+
+    @Query("select b from Booking b " +
            "inner join b.item i " +
            "where i.owner.id = ?1")
     List<Booking> getAllBookingByOwnerId(long userId);
@@ -50,4 +58,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "where i.owner.id = ?1 " +
             "and b.status = ?2")
     List<Booking> getBookingWithStatusByOwnerId(long userId, BookingStatus state);
+
+    @Query("select b from Booking b " +
+           "inner join b.item i " +
+           "where i.owner.id = ?1 " +
+           "and (b.status = ?2 or b.status = ?3 or b.status = ?4)" +
+           "and (b.end > localtimestamp and b.start < localtimestamp)")
+    List<Booking> getBookingCurrentByOwnerId(
+            long userId, BookingStatus waiting, BookingStatus rejected, BookingStatus current);
+
+    @Query("select b from Booking b " +
+           "where item_id = ?1")
+    List<Booking> getBookingByItemId(long itemId);
+
 }

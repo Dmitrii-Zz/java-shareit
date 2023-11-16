@@ -46,7 +46,7 @@ public class BookingService {
         }
 
         bookingDto.setBooker(userService.getUserById((userId)));
-        bookingDto.setItem(itemService.getItemById(bookingDto.getItemId()));
+        bookingDto.setItem(itemService.getItemById(bookingDto.getItemId(), userId));
         bookingDto.setStatus(BookingStatus.WAITING);
         Booking booking = BookingMapper.toBooking(bookingDto);
         return BookingMapper.toBookingDto(bookingStorage.save(booking));
@@ -99,6 +99,10 @@ public class BookingService {
             case "FUTURE":
                 bookings = bookingStorage.getFutureBookingByUserId(userId);
                 break;
+            case "CURRENT":
+                bookings = bookingStorage.getBookingCurrentByUserId
+                        (userId, BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
+                break;
             default:
                 bookings = bookingStorage.getBookingWithStatusByUserId(userId, konvertBookingStatus(state));
                 break;
@@ -121,11 +125,15 @@ public class BookingService {
             case "FUTURE":
                 bookings = bookingStorage.getFutureBookingByOwnerId(userId);
                 break;
+            case "CURRENT":
+                bookings = bookingStorage.getBookingCurrentByOwnerId
+                        (userId, BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
+                break;
             default:
                 bookings = bookingStorage.getBookingWithStatusByOwnerId(userId, konvertBookingStatus(state));
                 break;
         }
-
+        log.info("state: " + state + " кол-во: " + bookings.size());
         return getListBookingDto(bookings);
     }
 
