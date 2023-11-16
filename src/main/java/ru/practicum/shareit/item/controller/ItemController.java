@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemOwnerDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 
@@ -28,20 +29,21 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestHeader(USER_HEADER_ID) long userId,
-                           @PathVariable long itemId,
-                           @RequestBody ItemDto itemDto) {
+                              @PathVariable long itemId,
+                              @RequestBody ItemDto itemDto) {
         log.info("Обновление вещи пользователя id = " + userId);
         return itemService.updateItem(itemDto, userId, itemId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable long itemId) {
+    public ItemDto getItemById(@RequestHeader(USER_HEADER_ID) long userId,
+                               @PathVariable long itemId) {
         log.info("Запрос вещи id = " + itemId);
-        return itemService.getItemById(itemId);
+        return itemService.getItemById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemUser(@RequestHeader(USER_HEADER_ID) long userId) {
+    public List<ItemOwnerDto> getAllItemUser(@RequestHeader(USER_HEADER_ID) long userId) {
         log.info("Запрос всех вещей юзера id = " + userId);
         return itemService.findAllUsersItems(userId);
     }

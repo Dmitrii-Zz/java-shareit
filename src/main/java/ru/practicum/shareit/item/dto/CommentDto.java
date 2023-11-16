@@ -16,7 +16,7 @@ public class CommentDto {
     @Length(max = 2000, message = "Превышена длина отзыва.")
     private String text;
 
-    private String author;
+    private String authorName;
 
     private LocalDateTime created;
 }

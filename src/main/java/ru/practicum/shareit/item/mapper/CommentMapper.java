@@ -10,7 +10,6 @@ import ru.practicum.shareit.item.model.Comment;
 public class CommentMapper {
     public static Comment toComment(CommentDto commentDto) {
         return Comment.builder()
-                .id(commentDto.getId())
                 .text(commentDto.getText())
                 .build();
     }
@@ -19,7 +18,7 @@ public class CommentMapper {
         return CommentDto.builder()
                 .id(comment.getId())
                 .text(comment.getText())
-                .author(comment.getAuthor().getName())
+                .authorName(comment.getAuthor().getName())
                 .created(comment.getCreated())
                 .build();
     }

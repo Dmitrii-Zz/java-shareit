@@ -7,7 +7,6 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Data
 @Builder
@@ -34,14 +33,9 @@ public class Item {
     @NotNull(message = "В запросе отсутствует статус запроса к аренде.")
     private Boolean available;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User owner;
-
-    @ElementCollection
-    @CollectionTable(name = "comments", joinColumns = @JoinColumn(name = "item_id"))
-    @JoinColumn(name = "comment_id")
-    private List<Comment> comments;
 
     @ManyToOne
     @JoinColumn
