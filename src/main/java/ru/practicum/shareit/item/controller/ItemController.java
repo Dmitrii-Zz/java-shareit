@@ -43,9 +43,9 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemOwnerDto> getAllItemUser(@RequestHeader(USER_HEADER_ID) long userId) {
+    public List<ItemOwnerDto> getAllItemOwner(@RequestHeader(USER_HEADER_ID) long userId) {
         log.info("Запрос всех вещей юзера id = " + userId);
-        return itemService.findAllUsersItems(userId);
+        return itemService.findAllOwnersItems(userId);
     }
 
     @GetMapping("/search")

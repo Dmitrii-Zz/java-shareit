@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
@@ -55,6 +56,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
            "and (b.end > localtimestamp and b.start < localtimestamp)")
     List<Booking> getBookingCurrentByOwnerId(
             long userId, BookingStatus waiting, BookingStatus rejected, BookingStatus current);
+
+    @Query("select b from Booking b " +
+           "inner join b.item i " +
+           "where i.id = ?1 " +
+           "and b.item.id = ?1 " +
+           "and b.booker.id = ?2 " +
+           "and b.end < localtimestamp")
+    Optional<List<Booking>> getBookingItemWhichTookUser(long itemId, long userId);
 
     List<Booking> findByItemId(long itemId);
 

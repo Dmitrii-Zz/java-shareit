@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.ex.CheckUserException;
 import ru.practicum.shareit.exceptions.ex.ItemNotFoundException;
 import ru.practicum.shareit.exceptions.ex.NoAccessCommentException;
@@ -46,6 +47,8 @@ public class ItemService {
     }
 
     public ItemDto updateItem(ItemDto itemDto, long userId, long itemId) {
+
+        checkExistItem(itemId);
         Item itemFromBd = itemStorage.getReferenceById(itemId);
         boolean checkUser = itemFromBd.getOwner().getId() == userId;
 
@@ -69,10 +72,7 @@ public class ItemService {
     }
 
     public ItemDto getItemById(long itemId, long userId) {
-
-        if (itemStorage.findById(itemId).isEmpty()) {
-            throw new ItemNotFoundException("Отсутствует вещь с id = " + itemId);
-        }
+        checkExistItem(itemId);
 
         List<Item> items = new ArrayList<>();
         Item item = itemStorage.getReferenceById(itemId);
@@ -85,6 +85,7 @@ public class ItemService {
         log.info("Нашли комментов " + comments.size());
         ItemOwnerDto itemOwnerDto = buildListItemOwnerDto(items).get(0);
         itemOwnerDto.setComments(comments);
+
         if (item.getOwner().getId() == userId) {
             return ItemMapper.toItemDto(itemOwnerDto);
         } else {
@@ -94,7 +95,7 @@ public class ItemService {
         }
     }
 
-    public List<ItemOwnerDto> findAllUsersItems(long userId) {
+    public List<ItemOwnerDto> findAllOwnersItems(long userId) {
         userService.checkExistsUser(userId);
         List<Item> items = itemStorage.findByOwnerId(userId);
         return buildListItemOwnerDto(items);
@@ -105,9 +106,7 @@ public class ItemService {
 
         for (Item item : items) {
             ItemOwnerDto itemOwnerDto = ItemMapper.toItemOwnerDto(item);
-            log.info("вещь - " + itemOwnerDtos);
             List<Booking> rawBookings = bookingStorage.findByItemId(item.getId());
-            log.info("Нашлось аренд для вещи: " + item.getId() + ", " + rawBookings);
             List<Booking> bookings = rawBookings.stream()
                     .filter(x -> !x.getStatus().equals(BookingStatus.REJECTED))
                     .filter(x -> x.getStart().isAfter(LocalDateTime.now()))
@@ -140,7 +139,6 @@ public class ItemService {
 
             itemOwnerDtos.add(itemOwnerDto);
         }
-        log.info("ItemOwnerDtos = " + itemOwnerDtos);
         return itemOwnerDtos;
     }
 
@@ -169,30 +167,30 @@ public class ItemService {
         return optionalItem.get().getAvailable();
     }
 
-    public Item getItem(long id) {
-        return itemStorage.getReferenceById(id);
+    public Item getItem(long itemId) {
+        checkExistItem(itemId);
+        return itemStorage.getReferenceById(itemId);
     }
 
     public CommentDto addComment(CommentDto commentDto, long itemId, long userId) {
-        Comment comment = CommentMapper.toComment(commentDto);
-        boolean isBooking = false;
+        checkExistItem(itemId);
+        userService.checkExistsUser(userId);
+        Optional<List<Booking>> bookings = bookingStorage.getBookingItemWhichTookUser(itemId, userId);
 
-        for (Booking booking : bookingStorage.findByBookerIdAndEndBefore(userId, LocalDateTime.now())) {
-            if (booking.getItem().getId() == itemId) {
-                log.info("Юзер " + userId + " брал в аренду вещь " + itemId);
-                isBooking = true;
-                break;
-            }
-        }
-
-        if (!isBooking) {
+        if (bookings.isEmpty() || bookings.get().size() == 0) {
             throw new NoAccessCommentException("Нельзя оставить комментарий вещи, не взяв её в аренду");
         }
 
+        Comment comment = CommentMapper.toComment(commentDto);
         comment.setItem(itemStorage.getReferenceById(itemId));
         comment.setAuthor(UserMapper.toUser(userService.getUserById(userId)));
         comment.setCreated(LocalDateTime.now());
-        log.info("Отзыв: " + comment);
         return CommentMapper.toCommentDto(commentStorage.save(comment));
+    }
+
+    private void checkExistItem(long itemId) {
+        if (itemStorage.findById(itemId).isEmpty()) {
+            throw new ItemNotFoundException("Отсутствует вещь с id = " + itemId);
+        }
     }
 }
