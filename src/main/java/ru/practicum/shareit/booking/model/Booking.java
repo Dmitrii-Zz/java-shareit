@@ -27,7 +27,7 @@ public class Booking {
     @NotNull(message = "Отсутствует начальная точка отсчета.")
     private LocalDateTime start;
 
-    @Column(name = "name_date")
+    @Column(name = "end_date")
     @NotNull(message = "Отсутствует конечная точка отсчета.")
     private LocalDateTime end;
 
