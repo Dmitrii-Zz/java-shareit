@@ -15,23 +15,14 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@Entity
-@Table(name = "requests")
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemRequest {
-    @Column(name = "request_id")
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(length = 2000)
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
     private User requestor;
 
-    @Column(name = "created")
     private LocalDateTime created;
 }
