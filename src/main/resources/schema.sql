@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     start_date TIMESTAMP,
     end_date TIMESTAMP,
     item_id BIGINT REFERENCES items (item_id) ON DELETE CASCADE,
-    booker_id BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
+    user_id BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
     status VARCHAR
 );
 
