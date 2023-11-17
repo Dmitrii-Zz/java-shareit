@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS items (
     item_name VARCHAR(255) NOT NULL,
     item_description VARCHAR(2000),
     item_available BOOLEAN DEFAULT 'true',
-    owner_id BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
+    user_id BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
     request_id BIGINT REFERENCES requests (request_id) ON DELETE CASCADE
 );
 
