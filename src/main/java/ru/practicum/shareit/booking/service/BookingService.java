@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.ex.*;
@@ -96,17 +97,17 @@ public class BookingService {
         userService.checkExistsUser(userId);
         List<Booking> bookings;
 
-        switch (state) {
-            case "ALL":
+        switch (konvertBookingState(state)) {
+            case ALL:
                 bookings = bookingStorage.findByBookerId(userId);
                 break;
-            case "PAST":
+            case PAST:
                 bookings = bookingStorage.findByBookerIdAndEndBefore(userId, LocalDateTime.now());
                 break;
-            case "FUTURE":
+            case FUTURE:
                 bookings = bookingStorage.findAllByBookerIdAndStartAfter(userId, LocalDateTime.now());
                 break;
-            case "CURRENT":
+            case CURRENT:
                 bookings = bookingStorage.getBookingCurrentByUserId(userId,
                         BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
                 break;
@@ -122,17 +123,17 @@ public class BookingService {
         userService.checkExistsUser(userId);
         List<Booking> bookings;
 
-        switch (state) {
-            case "ALL":
+        switch (konvertBookingState(state)) {
+            case ALL:
                 bookings = bookingStorage.getAllBookingByOwnerId(userId);
                 break;
-            case "PAST":
+            case PAST:
                 bookings = bookingStorage.getPastBookingByOwnerId(userId);
                 break;
-            case "FUTURE":
+            case FUTURE:
                 bookings = bookingStorage.getFutureBookingByOwnerId(userId);
                 break;
-            case "CURRENT":
+            case CURRENT:
                 bookings = bookingStorage.getBookingCurrentByOwnerId(userId,
                         BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
                 break;
@@ -164,6 +165,14 @@ public class BookingService {
     private BookingStatus konvertBookingStatus(String state) {
         try {
             return BookingStatus.valueOf(state);
+        } catch (RuntimeException e) {
+            throw new UnsuportedBookingStatusException("Unknown state: " + state);
+        }
+    }
+
+    private BookingState konvertBookingState(String state) {
+        try {
+            return BookingState.valueOf(state);
         } catch (RuntimeException e) {
             throw new UnsuportedBookingStatusException("Unknown state: " + state);
         }
