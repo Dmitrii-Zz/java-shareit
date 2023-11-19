@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.ex.*;
@@ -96,8 +95,9 @@ public class BookingService {
     public List<BookingDto> findAllBookingByUserId(long userId, String state) {
         userService.checkExistsUser(userId);
         List<Booking> bookings;
+        BookingStatus status = konvertBookingStatus(state);
 
-        switch (konvertBookingState(state)) {
+        switch (status) {
             case ALL:
                 bookings = bookingStorage.findByBookerId(userId);
                 break;
@@ -112,7 +112,7 @@ public class BookingService {
                         BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
                 break;
             default:
-                bookings = bookingStorage.findByBookerIdAndStatus(userId, konvertBookingStatus(state));
+                bookings = bookingStorage.findByBookerIdAndStatus(userId, status);
                 break;
         }
 
@@ -122,8 +122,9 @@ public class BookingService {
     public List<BookingDto> findAllBookingByOwnerId(long userId, String state) {
         userService.checkExistsUser(userId);
         List<Booking> bookings;
+        BookingStatus status = konvertBookingStatus(state);
 
-        switch (konvertBookingState(state)) {
+        switch (status) {
             case ALL:
                 bookings = bookingStorage.getAllBookingByOwnerId(userId);
                 break;
@@ -138,7 +139,7 @@ public class BookingService {
                         BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
                 break;
             default:
-                bookings = bookingStorage.getBookingWithStatusByOwnerId(userId, konvertBookingStatus(state));
+                bookings = bookingStorage.getBookingWithStatusByOwnerId(userId, status);
                 break;
         }
 
@@ -165,14 +166,6 @@ public class BookingService {
     private BookingStatus konvertBookingStatus(String state) {
         try {
             return BookingStatus.valueOf(state);
-        } catch (RuntimeException e) {
-            throw new UnsuportedBookingStatusException("Unknown state: " + state);
-        }
-    }
-
-    private BookingState konvertBookingState(String state) {
-        try {
-            return BookingState.valueOf(state);
         } catch (RuntimeException e) {
             throw new UnsuportedBookingStatusException("Unknown state: " + state);
         }
