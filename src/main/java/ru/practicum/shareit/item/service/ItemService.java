@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -36,6 +37,7 @@ public class ItemService {
     private final CommentsRepository commentStorage;
     private final BookingRepository bookingStorage;
 
+    @Transactional
     public ItemDto createItem(ItemDto itemDto, long userId) {
         Item item = ItemMapper.toItem(itemDto);
         User owner = UserMapper.toUser(userService.getUserById(userId));
@@ -43,6 +45,7 @@ public class ItemService {
         return ItemMapper.toItemDto(itemStorage.save(item));
     }
 
+    @Transactional
     public ItemDto updateItem(ItemDto itemDto, long userId, long itemId) {
 
         checkExistItem(itemId);
@@ -163,6 +166,7 @@ public class ItemService {
         return itemStorage.getReferenceById(itemId);
     }
 
+    @Transactional
     public CommentDto addComment(CommentDto commentDto, long itemId, long userId) {
         checkExistItem(itemId);
         userService.checkExistsUser(userId);
