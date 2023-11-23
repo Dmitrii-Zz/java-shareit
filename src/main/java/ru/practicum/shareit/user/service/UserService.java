@@ -1,10 +1,10 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.EmailDuplicateException;
-import ru.practicum.shareit.exceptions.UserNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exceptions.ex.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -15,36 +15,32 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserService {
     private final UserRepository repository;
-    private final UserMapper userMapper;
 
+    @Transactional
     public UserDto createUser(UserDto userDto) {
-        validDublicateEmail(userDto);
-        User user = userMapper.toUser(userDto);
-        return userMapper.toUserDto(repository.createUser(user));
+        User user = UserMapper.toUser(userDto);
+        return UserMapper.toUserDto(repository.save(user));
     }
 
-    public UserDto getUserById(long id) {
-        if (!checkExistsUser(id)) {
-            throw new UserNotFoundException("Пользователь с id = " + id + " не найден");
-        }
-
-        return userMapper.toUserDto(repository.getUserById(id));
+    public UserDto getUserById(long userId) {
+        checkExistsUser(userId);
+        return UserMapper.toUserDto(repository.getReferenceById(userId));
     }
 
     public List<UserDto> getAllUsers() {
-        return repository.getAllUsers()
+        return repository.findAll()
                 .stream()
-                .map(userMapper::toUserDto)
+                .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public UserDto updateUser(UserDto userDto, long userId) {
-        userDto.setId(userId);
-        validDublicateEmail(userDto);
-        User updateUser = repository.getUserById(userId);
+        checkExistsUser(userId);
+        User updateUser = repository.getReferenceById(userId);
 
         if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
             updateUser.setEmail(userDto.getEmail());
@@ -54,25 +50,16 @@ public class UserService {
             updateUser.setName(userDto.getName());
         }
 
-        return userMapper.toUserDto(repository.updateUser(updateUser));
+        return UserMapper.toUserDto(repository.save(updateUser));
     }
 
     public void deleteUser(long id) {
-        repository.deleteUser(id);
+        repository.deleteById(id);
     }
 
-    public boolean checkExistsUser(long id) {
-        return repository.findUserByID(id);
-    }
-
-    private void validDublicateEmail(UserDto user) {
-        boolean isEmailAvailable = repository.getAllUsers()
-                .stream()
-                .filter(u -> u.getId() != user.getId())
-                .noneMatch(u -> u.getEmail().equals(user.getEmail()));
-
-        if (!isEmailAvailable) {
-            throw new EmailDuplicateException("email \"" + user.getEmail() + "\" занят.");
+    public void checkExistsUser(long userId) {
+        if (repository.findById(userId).isEmpty()) {
+            throw new UserNotFoundException(String.format("Пользователь с id = %d не существует", userId));
         }
     }
 }
