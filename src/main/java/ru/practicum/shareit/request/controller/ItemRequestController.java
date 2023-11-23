@@ -1,12 +1,42 @@
 package ru.practicum.shareit.request.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.service.ItemRequestService;
+import java.util.List;
 
-/**
- * TODO Sprint add-item-requests.
- */
+import static ru.practicum.shareit.constatnt.Constants.USER_HEADER_ID;
+
 @RestController
 @RequestMapping(path = "/requests")
+@RequiredArgsConstructor
+@Slf4j
 public class ItemRequestController {
+    private final ItemRequestService itemRequestService;
+
+    @PostMapping
+    public ItemRequestDto addRequest(@RequestBody ItemRequestDto itemRequestDto) {
+        log.info("Запрос на создание запроса вещи");
+        return itemRequestService.addRequest(itemRequestDto);
+    }
+
+    @GetMapping
+    public List<ItemRequestDto> getAllUsersItemRequest(@RequestHeader(USER_HEADER_ID) long userId) {
+        log.info("Запрос на возврат списка запросов юзера: ");
+        return itemRequestService.getAllItemRequest(userId);
+    }
+
+    @GetMapping("/all")
+    public List<ItemRequestDto> getAllOtherUsersItemRequest() {
+        log.info("Запрос на возврат списка запросов юзера: ");
+        return itemRequestService.getAllOtherUsersItemRequest();
+    }
+
+    @GetMapping("{requestId}")
+    public ItemRequestDto getItemRequest(@PathVariable long requestId) {
+        log.info("Запрос на возврат запроса с id = " + requestId);
+        return itemRequestService.getItemRequest(requestId);
+    }
 }
