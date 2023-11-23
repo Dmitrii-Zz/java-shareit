@@ -75,4 +75,10 @@ public class ErrorHandler {
     public ErrorResponse handleNoAccessItemException(final NoAccessCommentException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemRequestFoundException(final ItemRequestNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
