@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
+
+import javax.validation.Valid;
 import java.util.List;
 
 import static ru.practicum.shareit.constatnt.Constants.USER_HEADER_ID;
@@ -17,9 +19,10 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @PostMapping
-    public ItemRequestDto addRequest(@RequestBody ItemRequestDto itemRequestDto) {
+    public ItemRequestDto addRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
+                                     @RequestHeader(USER_HEADER_ID) long userId) {
         log.info("Запрос на создание запроса вещи");
-        return itemRequestService.addRequest(itemRequestDto);
+        return itemRequestService.addRequest(itemRequestDto, userId);
     }
 
     @GetMapping
