@@ -16,7 +16,5 @@ public class ItemRequestDto {
     @NotBlank(message = "В запросе отсутствует описание запроса")
     private String description;
 
-    private User requestor;
-
     private LocalDateTime created;
 }

@@ -27,7 +27,7 @@ public class ItemRequestController {
 
     @GetMapping
     public List<ItemRequestDto> getAllUsersItemRequest(@RequestHeader(USER_HEADER_ID) long userId) {
-        log.info("Запрос на возврат списка запросов юзера: ");
+        log.info("Запрос на возврат списка запросов юзера: " + userId);
         return itemRequestService.getAllItemRequest(userId);
     }
 
