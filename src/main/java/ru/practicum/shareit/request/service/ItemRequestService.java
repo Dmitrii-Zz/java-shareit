@@ -1,6 +1,8 @@
 package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemRequestService {
     private final ItemRequestRepository itemRequestStorage;
     private final UserService userService;
@@ -34,8 +37,13 @@ public class ItemRequestService {
                 .collect(Collectors.toList());
     }
 
-    public List<ItemRequestDto> getAllOtherUsersItemRequest() {
-        return null;
+    public List<ItemRequestDto> getAllOtherUsersItemRequest(long userId, int from, int size) {
+        userService.checkExistsUser(userId);
+        log.info("From = " + from + " Size = " + size);
+        return itemRequestStorage.findAllByRequestorIdIsNotOrderByCreated(userId, PageRequest.of(from, size))
+                .stream()
+                .map(ItemRequestMapper::toItemRequestDto)
+                .collect(Collectors.toList());
     }
 
     public ItemRequestDto getItemRequest(long requestId) {

@@ -32,9 +32,13 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getAllOtherUsersItemRequest() {
-        log.info("Запрос на возврат списка запросов юзера: ");
-        return itemRequestService.getAllOtherUsersItemRequest();
+    public List<ItemRequestDto> getAllOtherUsersItemRequest(
+            @RequestHeader(USER_HEADER_ID) long userId,
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "10") int size) {
+        log.info(String.format("Запрос от юзера id = %d, " +
+                "параметр from = %d, параметр size = %d", userId, from, size));
+        return itemRequestService.getAllOtherUsersItemRequest(userId, from, size);
     }
 
     @GetMapping("{requestId}")
