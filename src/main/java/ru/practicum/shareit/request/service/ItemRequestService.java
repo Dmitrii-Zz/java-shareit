@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.ex.ItemRequestNotFoundException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -13,6 +14,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,5 +50,15 @@ public class ItemRequestService {
 
     public ItemRequestDto getItemRequest(long requestId) {
         return null;
+    }
+
+    public ItemRequest checkExistsItemRequests(long itemRequestId) {
+        Optional<ItemRequest> optionalItemRequest = itemRequestStorage.findById(itemRequestId);
+
+        if (optionalItemRequest.isEmpty()) {
+            throw new ItemRequestNotFoundException("Запроса с id " + itemRequestId + " не существует");
+        }
+
+        return optionalItemRequest.get();
     }
 }

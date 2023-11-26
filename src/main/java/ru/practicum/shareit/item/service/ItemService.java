@@ -19,6 +19,9 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentsRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
+import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -36,12 +39,19 @@ public class ItemService {
     private final UserService userService;
     private final CommentsRepository commentStorage;
     private final BookingRepository bookingStorage;
+    private final ItemRequestService itemRequestService;
 
     @Transactional
     public ItemDto createItem(ItemDto itemDto, long userId) {
         Item item = ItemMapper.toItem(itemDto);
         User owner = UserMapper.toUser(userService.getUserById(userId));
         item.setOwner(owner);
+
+        if (itemDto.getItemRequest() != null) {
+            ItemRequest itemRequest = itemRequestService.checkExistsItemRequests(itemDto.getItemRequest());
+            item.setItemRequest(itemRequest);
+        }
+
         return ItemMapper.toItemDto(itemStorage.save(item));
     }
 
