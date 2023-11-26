@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ex.ItemRequestNotFoundException;
+import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class ItemRequestService {
     private final ItemRequestRepository itemRequestStorage;
     private final UserService userService;
+    private final ItemRepository itemStorage;
 
     public ItemRequestDto addRequest(ItemRequestDto itemRequestDto, long userId) {
         userService.checkExistsUser(userId);
@@ -34,9 +37,19 @@ public class ItemRequestService {
 
     public List<ItemRequestDto> getAllItemRequest(long userId) {
         userService.checkExistsUser(userId);
-        return itemRequestStorage.findAllByRequestorId(userId).stream()
+        List<ItemRequestDto> itemRequestDtoList = itemRequestStorage.findAllByRequestorId(userId)
+                .stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
+
+        for (ItemRequestDto itemRequestDto : itemRequestDtoList) {
+            itemRequestDto.setItems(itemStorage.findByItemRequestId(itemRequestDto.getId())
+                    .stream()
+                    .map(ItemMapper::toItemDto)
+                    .collect(Collectors.toList()));
+        }
+
+        return itemRequestDtoList;
     }
 
     public List<ItemRequestDto> getAllOtherUsersItemRequest(long userId, int from, int size) {

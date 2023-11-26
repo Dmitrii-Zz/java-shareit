@@ -40,3 +40,8 @@ CREATE TABLE IF NOT EXISTS comments (
     user_id BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
     created TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS items_requests (
+    item_id BIGINT REFERENCES items (item_id) ON DELETE CASCADE,
+    item_request_id BIGINT REFERENCES item_requests (item_request_id) ON DELETE CASCADE
+);

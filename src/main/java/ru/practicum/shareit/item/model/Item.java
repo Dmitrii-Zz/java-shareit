@@ -38,7 +38,7 @@ public class Item {
     @JoinColumn(name = "user_id", nullable = false)
     private User owner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_request_id")
     @JsonProperty("requestId")
     private ItemRequest itemRequest;
