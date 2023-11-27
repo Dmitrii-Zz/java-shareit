@@ -51,9 +51,11 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(@RequestParam String text) {
-        log.info("Поиск вещи по тексту = " + text);
-        return itemService.searchItem(text);
+    public List<ItemDto> searchItem(@RequestParam String text,
+                                    @RequestParam(defaultValue = "0") int from,
+                                    @RequestParam(defaultValue = "10") int size) {
+        log.info("Поиск вещи по тексту = {}, from = {}, size = {}.", text, from, size);
+        return itemService.searchItem(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

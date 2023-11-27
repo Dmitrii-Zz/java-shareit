@@ -158,13 +158,13 @@ public class ItemService {
         return itemOwnerDtos;
     }
 
-    public List<ItemDto> searchItem(String text) {
+    public List<ItemDto> searchItem(String text, int from, int size) {
 
         if (text.isBlank()) {
             return new ArrayList<>();
         }
 
-        return itemStorage.search(text.toLowerCase().trim())
+        return itemStorage.search(text.toLowerCase().trim(), PageRequest.of(from, size))
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
