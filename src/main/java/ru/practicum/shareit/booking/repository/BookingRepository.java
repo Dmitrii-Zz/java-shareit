@@ -14,16 +14,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByBookerIdOrderByStartDesc(long userId, PageRequest pageRequest);
 
-    List<Booking> findByBookerIdAndEndBefore(long userId, LocalDateTime dateTime, PageRequest pageRequest);
+    List<Booking> findByBookerIdAndEndBeforeOrderByStartDesc(long userId, LocalDateTime dateTime, PageRequest pageRequest);
 
-    List<Booking> findAllByBookerIdAndStartAfter(long userId, LocalDateTime dateTime, PageRequest pageRequest);
+    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(long userId, LocalDateTime dateTime, PageRequest pageRequest);
 
-    List<Booking> findByBookerIdAndStatus(long userId, BookingStatus state, PageRequest pageRequest);
+    List<Booking> findByBookerIdAndStatusOrderByStartDesc(long userId, BookingStatus state, PageRequest pageRequest);
 
     @Query("select b from Booking b " +
             "where user_id = ?1 " +
             "and (b.status = ?2 or b.status = ?3 or b.status = ?4)" +
-            "and (b.end > localtimestamp and b.start < localtimestamp)")
+            "and (b.end > localtimestamp and b.start < localtimestamp) " +
+            "order by b.start desc")
     List<Booking> getBookingCurrentByUserId(
             long userId, BookingStatus waiting, BookingStatus rejected, BookingStatus current);
 
@@ -36,26 +37,30 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b from Booking b " +
             "inner join b.item i " +
             "where i.owner.id = ?1 " +
-            "and b.end < localtimestamp")
+            "and b.end < localtimestamp " +
+            "order by b.start desc")
     List<Booking> getPastBookingByOwnerId(long userId, PageRequest pageRequest);
 
     @Query("select b from Booking b " +
             "inner join b.item i " +
             "where i.owner.id = ?1 " +
-            "and b.start > localtimestamp")
+            "and b.start > localtimestamp " +
+            "order by b.start desc")
     List<Booking> getFutureBookingByOwnerId(long userId, PageRequest pageRequest);
 
     @Query("select b from Booking b " +
             "inner join b.item i " +
             "where i.owner.id = ?1 " +
-            "and b.status = ?2")
+            "and b.status = ?2 " +
+            "order by b.start desc")
     List<Booking> getBookingWithStatusByOwnerId(long userId, BookingStatus state, PageRequest pageRequest);
 
     @Query("select b from Booking b " +
            "inner join b.item i " +
            "where i.owner.id = ?1 " +
            "and (b.status = ?2 or b.status = ?3 or b.status = ?4)" +
-           "and (b.end > localtimestamp and b.start < localtimestamp)")
+           "and (b.end > localtimestamp and b.start < localtimestamp) " +
+           "order by b.start desc")
     List<Booking> getBookingCurrentByOwnerId(
             long userId,
             BookingStatus waiting,
