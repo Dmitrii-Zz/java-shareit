@@ -55,10 +55,20 @@ public class ItemRequestService {
     public List<ItemRequestDto> getAllOtherUsersItemRequest(long userId, int from, int size) {
         userService.checkExistsUser(userId);
         log.info("From = " + from + " Size = " + size);
-        return itemRequestStorage.findAllByRequestorIdIsNotOrderByCreated(userId, PageRequest.of(from, size))
+        List<ItemRequestDto> itemRequestDtoList = itemRequestStorage
+                .findAllByRequestorIdIsNotOrderByCreated(userId, PageRequest.of(from, size))
                 .stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
+
+        for (ItemRequestDto itemRequestDto : itemRequestDtoList) {
+            itemRequestDto.setItems(itemStorage.findByItemRequestId(itemRequestDto.getId())
+                    .stream()
+                    .map(ItemMapper::toItemDto)
+                    .collect(Collectors.toList()));
+        }
+
+        return itemRequestDtoList;
     }
 
     public ItemRequestDto getItemRequest(long requestId) {
