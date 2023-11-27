@@ -71,8 +71,14 @@ public class ItemRequestService {
         return itemRequestDtoList;
     }
 
-    public ItemRequestDto getItemRequest(long requestId) {
-        return null;
+    public ItemRequestDto getItemRequest(long requestId, long userId) {
+        userService.checkExistsUser(userId);
+        ItemRequest itemRequest = checkExistsItemRequests(requestId);
+        ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
+        itemRequestDto.setItems(itemStorage.findByItemRequestId(itemRequestDto.getId()).stream()
+                                .map(ItemMapper::toItemDto)
+                                .collect(Collectors.toList()));
+        return itemRequestDto;
     }
 
     public ItemRequest checkExistsItemRequests(long itemRequestId) {

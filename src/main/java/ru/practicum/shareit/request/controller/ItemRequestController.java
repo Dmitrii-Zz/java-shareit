@@ -42,8 +42,9 @@ public class ItemRequestController {
     }
 
     @GetMapping("{requestId}")
-    public ItemRequestDto getItemRequest(@PathVariable long requestId) {
-        log.info("Запрос на возврат запроса с id = " + requestId);
-        return itemRequestService.getItemRequest(requestId);
+    public ItemRequestDto getItemRequest(@PathVariable long requestId,
+                                         @RequestHeader(USER_HEADER_ID) long userId) {
+        log.info("Запрос на возврат запроса с id = " + requestId + " от юзера id = " + userId);
+        return itemRequestService.getItemRequest(requestId, userId);
     }
 }
