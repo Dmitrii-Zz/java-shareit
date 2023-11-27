@@ -37,38 +37,29 @@ public class ItemRequestService {
 
     public List<ItemRequestDto> getAllItemRequest(long userId) {
         userService.checkExistsUser(userId);
-        List<ItemRequestDto> itemRequestDtoList = itemRequestStorage.findAllByRequestorId(userId)
-                .stream()
-                .map(ItemRequestMapper::toItemRequestDto)
-                .collect(Collectors.toList());
-
-        for (ItemRequestDto itemRequestDto : itemRequestDtoList) {
-            itemRequestDto.setItems(itemStorage.findByItemRequestId(itemRequestDto.getId())
-                    .stream()
-                    .map(ItemMapper::toItemDto)
-                    .collect(Collectors.toList()));
-        }
-
-        return itemRequestDtoList;
+        return getListItemRequestDto(itemRequestStorage.findAllByRequestorId(userId));
     }
 
     public List<ItemRequestDto> getAllOtherUsersItemRequest(long userId, int from, int size) {
         userService.checkExistsUser(userId);
         log.info("From = " + from + " Size = " + size);
-        List<ItemRequestDto> itemRequestDtoList = itemRequestStorage
-                .findAllByRequestorIdIsNotOrderByCreated(userId, PageRequest.of(from, size))
-                .stream()
+        return getListItemRequestDto(itemRequestStorage
+                .findAllByRequestorIdIsNotOrderByCreated(userId, PageRequest.of(from, size)));
+    }
+
+    private List<ItemRequestDto> getListItemRequestDto(List<ItemRequest> itemRequests) {
+        List<ItemRequestDto> listItemRequestDto = itemRequests.stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
 
-        for (ItemRequestDto itemRequestDto : itemRequestDtoList) {
+        for (ItemRequestDto itemRequestDto : listItemRequestDto) {
             itemRequestDto.setItems(itemStorage.findByItemRequestId(itemRequestDto.getId())
                     .stream()
                     .map(ItemMapper::toItemDto)
                     .collect(Collectors.toList()));
         }
 
-        return itemRequestDtoList;
+        return listItemRequestDto;
     }
 
     public ItemRequestDto getItemRequest(long requestId, long userId) {
