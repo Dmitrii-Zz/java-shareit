@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -111,9 +112,9 @@ public class ItemService {
         }
     }
 
-    public List<ItemOwnerDto> findAllOwnersItems(long userId) {
+    public List<ItemOwnerDto> findAllOwnersItems(long userId, int from, int size) {
         userService.checkExistsUser(userId);
-        List<Item> items = itemStorage.findByOwnerId(userId);
+        List<Item> items = itemStorage.findByOwnerId(userId, PageRequest.of(from, size));
         return buildListItemOwnerDto(items);
     }
 
