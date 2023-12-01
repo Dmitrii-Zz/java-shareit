@@ -1,4 +1,4 @@
-package ru.practicum.shareit;
+package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -89,7 +89,10 @@ public class UserServiceTest {
                 .email("mail@mail.ru")
                 .build();
         when(userStorage.findById(userId)).thenReturn(Optional.of(new User()));
-        when(userStorage.getReferenceById(userId)).thenReturn(User.builder().id(1).build());
+        when(userStorage.getReferenceById(userId)).thenReturn(User.builder()
+                                                                  .name("Владимир")
+                                                                  .id(1)
+                                                                  .build());
         when(userStorage.save(userExpected)).thenReturn(userExpected);
 
         User actualUserDto = UserMapper.toUser(userService.updateUser(UserMapper.toUserDto(userExpected), userId));
