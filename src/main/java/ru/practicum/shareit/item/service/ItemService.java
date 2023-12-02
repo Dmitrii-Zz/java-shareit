@@ -113,8 +113,9 @@ public class ItemService {
     }
 
     public List<ItemOwnerDto> findAllOwnersItems(long userId, int from, int size) {
+        int page = from / size;
         userService.checkExistsUser(userId);
-        List<Item> items = itemStorage.findByOwnerId(userId, PageRequest.of(from, size));
+        List<Item> items = itemStorage.findByOwnerId(userId, PageRequest.of(page, size));
         return buildListItemOwnerDto(items);
     }
 
@@ -159,12 +160,13 @@ public class ItemService {
     }
 
     public List<ItemDto> searchItem(String text, int from, int size) {
+        int page = from / size;
 
         if (text.isBlank()) {
             return new ArrayList<>();
         }
 
-        return itemStorage.search(text.toLowerCase().trim(), PageRequest.of(from, size))
+        return itemStorage.search(text.toLowerCase().trim(), PageRequest.of(page, size))
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
