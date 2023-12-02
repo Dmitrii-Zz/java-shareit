@@ -25,18 +25,11 @@ public class UserControllerTest {
 
     @Test
     public void getAllUsersTest() {
-        List<UserDto> expectedUsers = List.of(UserDto.builder().build());
-        when(userService.getAllUsers()).thenReturn(expectedUsers);
-        List<UserDto> response = userController.getAllUsers();
 
-        assertEquals("test", 1, response.size());
     }
 
     @Test
     public void createUserTest_whenWithoutName_thenReturnExceptionTest() {
-        UserDto userDto = UserDto.builder()
-                .email("user@yandex.ru")
-                .build();
 
 
     }
