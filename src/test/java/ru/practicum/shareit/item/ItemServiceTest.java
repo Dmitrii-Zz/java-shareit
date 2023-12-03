@@ -269,7 +269,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void SearchItem_whenTextIsBlankTest() {
+    public void searchItem_whenTextIsBlankTest() {
         String text = " ";
         int from = 1;
         int size = 1;
@@ -278,7 +278,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void SearchItem_whenTextNotIsBlankTest() {
+    public void searchItem_whenTextNotIsBlankTest() {
         String text = "камера";
         int from = 1;
         int size = 1;

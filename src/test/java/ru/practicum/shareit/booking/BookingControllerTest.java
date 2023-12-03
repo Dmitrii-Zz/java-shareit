@@ -32,7 +32,7 @@ public class BookingControllerTest {
     private BookingService bookingService;
 
     @InjectMocks
-    private BookingController BookingController;
+    private BookingController bookingController;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -43,7 +43,7 @@ public class BookingControllerTest {
     @BeforeEach
     public void setUp() {
         mvc = MockMvcBuilders
-                .standaloneSetup(BookingController)
+                .standaloneSetup(bookingController)
                 .build();
 
         mapper.findAndRegisterModules();

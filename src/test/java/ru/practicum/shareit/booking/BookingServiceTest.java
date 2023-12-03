@@ -336,7 +336,7 @@ public class BookingServiceTest {
         long userId = 1;
         int from = 1;
         int size = 1;
-        int page = from/size;
+        int page = from / size;
         String state = "ALL";
 
         when(bookingStorage.findByBookerIdOrderByStartDesc(userId, PageRequest.of(page, size)))
@@ -361,7 +361,7 @@ public class BookingServiceTest {
         long userId = 1;
         int from = 1;
         int size = 1;
-        int page = from/size;
+        int page = from / size;
         String state = "PAST";
 
         when(bookingStorage.findByBookerIdAndEndBeforeOrderByStartDesc(anyLong(),
@@ -386,7 +386,7 @@ public class BookingServiceTest {
         long userId = 1;
         int from = 1;
         int size = 1;
-        int page = from/size;
+        int page = from / size;
         String state = "CURRENT";
 
         when(bookingStorage.getBookingCurrentByUserId(userId,
@@ -412,7 +412,7 @@ public class BookingServiceTest {
         long userId = 1;
         int from = 1;
         int size = 1;
-        int page = from/size;
+        int page = from / size;
         String state = "FUTURE";
 
         when(bookingStorage.findAllByBookerIdAndStartAfterOrderByStartDesc(anyLong(),
@@ -438,7 +438,7 @@ public class BookingServiceTest {
         long userId = 1;
         int from = 1;
         int size = 1;
-        int page = from/size;
+        int page = from / size;
         String state = "WAITING";
 
         when(bookingStorage.findByBookerIdAndStatusOrderByStartDesc(anyLong(),
@@ -465,11 +465,11 @@ public class BookingServiceTest {
         long userId = 1;
         int from = 1;
         int size = 1;
-        int page = from/size;
+        int page = from / size;
         String state = "ALL";
 
-        when(bookingStorage.getAllBookingByOwnerId(userId, PageRequest.of(page, size))).
-                thenReturn(Collections.emptyList());
+        when(bookingStorage.getAllBookingByOwnerId(userId, PageRequest.of(page, size)))
+                .thenReturn(Collections.emptyList());
 
         List<BookingDto> bookings = bookingService.findAllBookingByOwnerId(userId, state, from, size);
 
@@ -491,11 +491,11 @@ public class BookingServiceTest {
         long userId = 1;
         int from = 1;
         int size = 1;
-        int page = from/size;
+        int page = from / size;
         String state = "PAST";
 
-        when(bookingStorage.getPastBookingByOwnerId(userId, PageRequest.of(page, size))).
-                thenReturn(Collections.emptyList());
+        when(bookingStorage.getPastBookingByOwnerId(userId, PageRequest.of(page, size)))
+                .thenReturn(Collections.emptyList());
 
         List<BookingDto> bookings = bookingService.findAllBookingByOwnerId(userId, state, from, size);
 
@@ -517,11 +517,11 @@ public class BookingServiceTest {
         long userId = 1;
         int from = 1;
         int size = 1;
-        int page = from/size;
+        int page = from / size;
         String state = "FUTURE";
 
-        when(bookingStorage.getFutureBookingByOwnerId(userId, PageRequest.of(page, size))).
-                thenReturn(Collections.emptyList());
+        when(bookingStorage.getFutureBookingByOwnerId(userId, PageRequest.of(page, size)))
+                .thenReturn(Collections.emptyList());
 
         List<BookingDto> bookings = bookingService.findAllBookingByOwnerId(userId, state, from, size);
 
@@ -543,7 +543,7 @@ public class BookingServiceTest {
         long userId = 1;
         int from = 1;
         int size = 1;
-        int page = from/size;
+        int page = from / size;
         String state = "CURRENT";
 
         when(bookingStorage.getBookingCurrentByOwnerId(userId,
@@ -568,7 +568,7 @@ public class BookingServiceTest {
         long userId = 1;
         int from = 1;
         int size = 1;
-        int page = from/size;
+        int page = from / size;
         String state = "WAITING";
 
         when(bookingStorage.getBookingWithStatusByOwnerId(anyLong(),
