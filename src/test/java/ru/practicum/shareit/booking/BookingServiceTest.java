@@ -48,7 +48,7 @@ public class BookingServiceTest {
     public void createBooking_whenNotValidDateTest() {
         long userId = 1;
         BookingDto bookingDto = BookingDto.builder()
-                .itemId(1)
+                .itemId(1L)
                 .start(LocalDateTime.of(2023, 12, 3, 12, 0))
                 .end(LocalDateTime.of(2023, 12, 2, 12, 0))
                 .build();
@@ -61,7 +61,7 @@ public class BookingServiceTest {
     public void createBooking_whenNotAvailableItemTest() {
         long userId = 1;
         BookingDto bookingDto = BookingDto.builder()
-                .itemId(1)
+                .itemId(1L)
                 .start(LocalDateTime.of(2023, 12, 2, 12, 0))
                 .end(LocalDateTime.of(2023, 12, 3, 12, 0))
                 .build();
@@ -76,7 +76,7 @@ public class BookingServiceTest {
     public void createBooking_whenUserOwnerItemTest() {
         long userId = 1;
         BookingDto bookingDto = BookingDto.builder()
-                .itemId(1)
+                .itemId(1L)
                 .start(LocalDateTime.of(2023, 12, 2, 12, 0))
                 .end(LocalDateTime.of(2023, 12, 3, 12, 0))
                 .build();
