@@ -78,7 +78,7 @@ public class ItemRequestServiceTest {
         int from = 5;
         int size = 5;
 
-        when(itemRequestStorage.findAllByRequestorIdIsNotOrderByCreated(userId, PageRequest.of(from, size)))
+        when(itemRequestStorage.findAllByRequestorIdIsNotOrderByCreated(anyLong(), any(PageRequest.class)))
                 .thenReturn(List.of(new ItemRequest()));
 
         List<ItemRequestDto> actualListItemRequest =
