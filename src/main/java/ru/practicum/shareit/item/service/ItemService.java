@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -27,7 +26,9 @@ import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.utils.Page;
 
+import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,10 +113,9 @@ public class ItemService {
         }
     }
 
-    public List<ItemOwnerDto> findAllOwnersItems(long userId, int from, int size) {
-        int page = from / size;
+    public List<ItemOwnerDto> findAllOwnersItems(long userId, @Min(0) int from, @Min(1) int size) {
         userService.checkExistsUser(userId);
-        List<Item> items = itemStorage.findByOwnerId(userId, PageRequest.of(page, size));
+        List<Item> items = itemStorage.findByOwnerId(userId, Page.createPageRequest(from, size));
         return buildListItemOwnerDto(items);
     }
 
@@ -159,14 +159,12 @@ public class ItemService {
         return itemOwnerDtos;
     }
 
-    public List<ItemDto> searchItem(String text, int from, int size) {
-        int page = from / size;
-
+    public List<ItemDto> searchItem(String text, @Min(0) int from, @Min(1) int size) {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
 
-        return itemStorage.search(text.toLowerCase().trim(), PageRequest.of(page, size))
+        return itemStorage.search(text.toLowerCase().trim(), Page.createPageRequest(from, size))
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());

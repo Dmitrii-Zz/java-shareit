@@ -14,11 +14,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByBookerIdOrderByStartDesc(long userId, PageRequest pageRequest);
 
-    List<Booking> findByBookerIdAndEndBeforeOrderByStartDesc(long userId, LocalDateTime dateTime, PageRequest pageRequest);
+    List<Booking> findByBookerIdAndEndBeforeOrderByStartDesc(long userId,
+                                                             LocalDateTime dateTime,
+                                                             PageRequest pageRequest);
 
-    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(long userId, LocalDateTime dateTime, PageRequest pageRequest);
+    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(long userId,
+                                                                 LocalDateTime dateTime,
+                                                                 PageRequest pageRequest);
 
-    List<Booking> findByBookerIdAndStatusOrderByStartDesc(long userId, BookingStatus state, PageRequest pageRequest);
+    List<Booking> findByBookerIdAndStatusOrderByStartDesc(long userId,
+                                                          BookingStatus state,
+                                                          PageRequest pageRequest);
 
     @Query("select b from Booking b " +
             "where user_id = ?1 " +

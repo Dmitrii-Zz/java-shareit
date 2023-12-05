@@ -2,7 +2,6 @@ package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ex.ItemRequestNotFoundException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -13,7 +12,9 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.utils.Page;
 
+import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -40,11 +41,11 @@ public class ItemRequestService {
         return getListItemRequestDto(itemRequestStorage.findAllByRequestorId(userId));
     }
 
-    public List<ItemRequestDto> getAllOtherUsersItemRequest(long userId, int from, int size) {
+    public List<ItemRequestDto> getAllOtherUsersItemRequest(long userId, @Min(0) int from, @Min(1) int size) {
         userService.checkExistsUser(userId);
         log.info("From = " + from + " Size = " + size);
         return getListItemRequestDto(itemRequestStorage
-                .findAllByRequestorIdIsNotOrderByCreated(userId, PageRequest.of(from, size)));
+                .findAllByRequestorIdIsNotOrderByCreated(userId, Page.createPageRequest(from, size)));
     }
 
     private List<ItemRequestDto> getListItemRequestDto(List<ItemRequest> itemRequests) {

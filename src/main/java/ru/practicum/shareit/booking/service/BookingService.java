@@ -15,6 +15,7 @@ import ru.practicum.shareit.exceptions.ex.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.utils.Page;
 
 import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
@@ -102,25 +103,25 @@ public class BookingService {
         userService.checkExistsUser(userId);
         List<Booking> bookings;
         BookingStatus status = konvertBookingStatus(state);
-        int page = from / size;
+        PageRequest pageRequest = Page.createPageRequest(from, size);
         switch (status) {
             case ALL:
-                bookings = bookingStorage.findByBookerIdOrderByStartDesc(userId, PageRequest.of(page, size));
+                bookings = bookingStorage.findByBookerIdOrderByStartDesc(userId, pageRequest);
                 break;
             case PAST:
                 bookings = bookingStorage.findByBookerIdAndEndBeforeOrderByStartDesc(userId,
-                        LocalDateTime.now(), PageRequest.of(page, size));
+                        LocalDateTime.now(), pageRequest);
                 break;
             case FUTURE:
                 bookings = bookingStorage.findAllByBookerIdAndStartAfterOrderByStartDesc(userId,
-                        LocalDateTime.now(), PageRequest.of(page, size));
+                        LocalDateTime.now(), pageRequest);
                 break;
             case CURRENT:
                 bookings = bookingStorage.getBookingCurrentByUserId(userId,
                         BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
                 break;
             default:
-                bookings = bookingStorage.findByBookerIdAndStatusOrderByStartDesc(userId, status, PageRequest.of(page, size));
+                bookings = bookingStorage.findByBookerIdAndStatusOrderByStartDesc(userId, status, pageRequest);
                 break;
         }
 
@@ -131,29 +132,29 @@ public class BookingService {
                                                     @Min(0) int from,
                                                     @Min(1) int size) {
         userService.checkExistsUser(userId);
-        int page = from / size;
+        PageRequest pageRequest = Page.createPageRequest(from, size);
         List<Booking> bookings;
         BookingStatus status = konvertBookingStatus(state);
 
         switch (status) {
             case ALL:
-                bookings = bookingStorage.getAllBookingByOwnerId(userId, PageRequest.of(page, size));
+                bookings = bookingStorage.getAllBookingByOwnerId(userId, pageRequest);
                 break;
             case PAST:
-                bookings = bookingStorage.getPastBookingByOwnerId(userId, PageRequest.of(page, size));
+                bookings = bookingStorage.getPastBookingByOwnerId(userId, pageRequest);
                 break;
             case FUTURE:
-                bookings = bookingStorage.getFutureBookingByOwnerId(userId, PageRequest.of(page, size));
+                bookings = bookingStorage.getFutureBookingByOwnerId(userId, pageRequest);
                 break;
             case CURRENT:
                 bookings = bookingStorage.getBookingCurrentByOwnerId(userId,
                         BookingStatus.APPROVED,
                         BookingStatus.WAITING,
                         BookingStatus.REJECTED,
-                        PageRequest.of(page, size));
+                        pageRequest);
                 break;
             default:
-                bookings = bookingStorage.getBookingWithStatusByOwnerId(userId, status, PageRequest.of(page, size));
+                bookings = bookingStorage.getBookingWithStatusByOwnerId(userId, status, pageRequest);
                 break;
         }
 
