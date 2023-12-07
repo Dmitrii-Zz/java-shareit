@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exceptions.ex;
+package ru.practicum.shareit.booking.exceptions;
 
 public class UnsuportedBookingStatusException extends RuntimeException {
     public UnsuportedBookingStatusException(final String mess) {
