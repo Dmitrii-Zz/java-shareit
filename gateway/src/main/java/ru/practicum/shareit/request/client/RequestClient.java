@@ -1,2 +1,7 @@
-package ru.practicum.shareit.request.client;public class RequestClient {
+package ru.practicum.shareit.request.client;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class RequestClient {
 }
