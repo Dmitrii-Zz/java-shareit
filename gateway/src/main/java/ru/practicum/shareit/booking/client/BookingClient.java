@@ -47,8 +47,8 @@ public class BookingClient extends BaseClient {
         return get(path, userId);
     }
 
-    public ResponseEntity<Object> createBooking(BookingDto BookingDto, long userId) {
-        return post("/", userId, null, BookingDto);
+    public ResponseEntity<Object> createBooking(BookingDto bookingDto, long userId) {
+        return post("/", userId, null, bookingDto);
     }
 
     public ResponseEntity<Object> findAllBookingByUserId(long userId,
