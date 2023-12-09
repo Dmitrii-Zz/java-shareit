@@ -41,15 +41,19 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> findAllBookingByUserId(@RequestHeader(USER_HEADER_ID) long userId,
-                                                   @RequestParam(defaultValue = "ALL") String state) {
-        log.info("Вернуть список аренды {} юзера {}", state, userId);
-        return bookingService.findAllBookingByUserId(userId, state);
+                                                   @RequestParam(defaultValue = "ALL") String state,
+                                                   @RequestParam(defaultValue = "0") int from,
+                                                   @RequestParam(defaultValue = "10") int size) {
+        log.info("Вернуть список аренды {} юзера {} c параметрами from {} и size {}", state, userId, from, size);
+        return bookingService.findAllBookingByUserId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findAllBookingByOwnerId(@RequestHeader(USER_HEADER_ID) long userId,
-                                                   @RequestParam(defaultValue = "ALL") String state) {
+                                                    @RequestParam(defaultValue = "ALL") String state,
+                                                    @RequestParam(defaultValue = "0") int from,
+                                                    @RequestParam(defaultValue = "10") int size) {
         log.info("Вернуть список аренды {} юзера {}", state, userId);
-        return bookingService.findAllBookingByOwnerId(userId, state);
+        return bookingService.findAllBookingByOwnerId(userId, state, from, size);
     }
 }

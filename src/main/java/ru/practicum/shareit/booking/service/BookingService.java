@@ -1,8 +1,11 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -12,14 +15,18 @@ import ru.practicum.shareit.exceptions.ex.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.utils.Page;
 
+import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Validated
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingService {
     private final BookingRepository bookingStorage;
     private final ItemService itemService;
@@ -92,54 +99,62 @@ public class BookingService {
                 String.format("Вещь с id = %d недоступна для юзера id = %d.", booking.getItem().getId(), userId));
     }
 
-    public List<BookingDto> findAllBookingByUserId(long userId, String state) {
+    public List<BookingDto> findAllBookingByUserId(long userId, String state, @Min(0) int from, @Min(1) int size) {
         userService.checkExistsUser(userId);
         List<Booking> bookings;
         BookingStatus status = konvertBookingStatus(state);
-
+        PageRequest pageRequest = Page.createPageRequest(from, size);
         switch (status) {
             case ALL:
-                bookings = bookingStorage.findByBookerId(userId);
+                bookings = bookingStorage.findByBookerIdOrderByStartDesc(userId, pageRequest);
                 break;
             case PAST:
-                bookings = bookingStorage.findByBookerIdAndEndBefore(userId, LocalDateTime.now());
+                bookings = bookingStorage.findByBookerIdAndEndBeforeOrderByStartDesc(userId,
+                        LocalDateTime.now(), pageRequest);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findAllByBookerIdAndStartAfter(userId, LocalDateTime.now());
+                bookings = bookingStorage.findAllByBookerIdAndStartAfterOrderByStartDesc(userId,
+                        LocalDateTime.now(), pageRequest);
                 break;
             case CURRENT:
                 bookings = bookingStorage.getBookingCurrentByUserId(userId,
                         BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
                 break;
             default:
-                bookings = bookingStorage.findByBookerIdAndStatus(userId, status);
+                bookings = bookingStorage.findByBookerIdAndStatusOrderByStartDesc(userId, status, pageRequest);
                 break;
         }
 
         return getListBookingDto(bookings);
     }
 
-    public List<BookingDto> findAllBookingByOwnerId(long userId, String state) {
+    public List<BookingDto> findAllBookingByOwnerId(long userId, String state,
+                                                    @Min(0) int from,
+                                                    @Min(1) int size) {
         userService.checkExistsUser(userId);
+        PageRequest pageRequest = Page.createPageRequest(from, size);
         List<Booking> bookings;
         BookingStatus status = konvertBookingStatus(state);
 
         switch (status) {
             case ALL:
-                bookings = bookingStorage.getAllBookingByOwnerId(userId);
+                bookings = bookingStorage.getAllBookingByOwnerId(userId, pageRequest);
                 break;
             case PAST:
-                bookings = bookingStorage.getPastBookingByOwnerId(userId);
+                bookings = bookingStorage.getPastBookingByOwnerId(userId, pageRequest);
                 break;
             case FUTURE:
-                bookings = bookingStorage.getFutureBookingByOwnerId(userId);
+                bookings = bookingStorage.getFutureBookingByOwnerId(userId, pageRequest);
                 break;
             case CURRENT:
                 bookings = bookingStorage.getBookingCurrentByOwnerId(userId,
-                        BookingStatus.APPROVED, BookingStatus.WAITING, BookingStatus.REJECTED);
+                        BookingStatus.APPROVED,
+                        BookingStatus.WAITING,
+                        BookingStatus.REJECTED,
+                        pageRequest);
                 break;
             default:
-                bookings = bookingStorage.getBookingWithStatusByOwnerId(userId, status);
+                bookings = bookingStorage.getBookingWithStatusByOwnerId(userId, status, pageRequest);
                 break;
         }
 
@@ -149,7 +164,6 @@ public class BookingService {
     private List<BookingDto> getListBookingDto(List<Booking> bookings) {
         return bookings.stream()
                 .map(BookingMapper::toBookingDto)
-                .sorted((x, x1) -> x1.getStart().compareTo(x.getStart()))
                 .collect(Collectors.toList());
     }
 

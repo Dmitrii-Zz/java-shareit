@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -19,10 +20,15 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentsRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
+import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.utils.Page;
 
+import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +37,32 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ItemService {
     private final ItemRepository itemStorage;
     private final UserService userService;
     private final CommentsRepository commentStorage;
     private final BookingRepository bookingStorage;
+    private final ItemRequestService itemRequestService;
+    private final ItemRequestRepository itemRequestStorage;
 
     @Transactional
     public ItemDto createItem(ItemDto itemDto, long userId) {
         Item item = ItemMapper.toItem(itemDto);
         User owner = UserMapper.toUser(userService.getUserById(userId));
         item.setOwner(owner);
-        return ItemMapper.toItemDto(itemStorage.save(item));
+        Item itemSave;
+
+        if (itemDto.getItemRequest() != null) {
+            ItemRequest itemRequest = itemRequestService.checkExistsItemRequests(itemDto.getItemRequest());
+            item.setItemRequest(itemRequest);
+            itemSave = itemStorage.save(item);
+            itemRequestStorage.save(itemRequest);
+        } else {
+            itemSave = itemStorage.save(item);
+        }
+
+        return ItemMapper.toItemDto(itemSave);
     }
 
     @Transactional
@@ -93,9 +113,9 @@ public class ItemService {
         }
     }
 
-    public List<ItemOwnerDto> findAllOwnersItems(long userId) {
+    public List<ItemOwnerDto> findAllOwnersItems(long userId, @Min(0) int from, @Min(1) int size) {
         userService.checkExistsUser(userId);
-        List<Item> items = itemStorage.findByOwnerId(userId);
+        List<Item> items = itemStorage.findByOwnerId(userId, Page.createPageRequest(from, size));
         return buildListItemOwnerDto(items);
     }
 
@@ -139,13 +159,12 @@ public class ItemService {
         return itemOwnerDtos;
     }
 
-    public List<ItemDto> searchItem(String text) {
-
+    public List<ItemDto> searchItem(String text, @Min(0) int from, @Min(1) int size) {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
 
-        return itemStorage.search(text.toLowerCase().trim())
+        return itemStorage.search(text.toLowerCase().trim(), Page.createPageRequest(from, size))
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
