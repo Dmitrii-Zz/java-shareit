@@ -19,7 +19,7 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @PostMapping
-    public ItemRequestDto addRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
+    public ItemRequestDto addRequest(@RequestBody ItemRequestDto itemRequestDto,
                                      @RequestHeader(USER_HEADER_ID) long userId) {
         log.info("Запрос на создание запроса вещи");
         return itemRequestService.addRequest(itemRequestDto, userId);

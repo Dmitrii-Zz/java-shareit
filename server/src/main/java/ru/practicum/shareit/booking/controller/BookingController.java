@@ -18,7 +18,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public BookingDto createBooking(@Validated @RequestBody BookingDto bookingDto,
+    public BookingDto createBooking(BookingDto bookingDto,
                                     @RequestHeader(USER_HEADER_ID) long userId) {
         log.info("Запрос на создание аренды вещи {} от юзера {}.", bookingDto.getItemId(), userId);
         return bookingService.createBooking(bookingDto, userId);
