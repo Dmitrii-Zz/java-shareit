@@ -18,6 +18,7 @@ services:
     depends_on:
       - db
     environment:
+      - DB_NAME=shareit
       - DB_HOST=db
       - DB_PORT=5432
       - PGUSER=postgresshareit
@@ -25,14 +26,14 @@ services:
       - POSTGRES_PASSWORD=postgresshareit
 
   db:
-    image: postgres:14.0-alpine
+    image: postgres:14.0
     container_name: Share-It-DB
     ports:
       - "6541:5432"
     volumes:
       - /var/lib/postgresql/data/
     environment:
-      - DB_NAME=shareit
+      - POSTGRES_DB=shareit
       - PGUSER=postgresshareit
       - POSTGRES_USER=postgresshareit
       - POSTGRES_PASSWORD=postgresshareit
