@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.client;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import java.util.Map;
 public class BookingClient extends BaseClient {
     private static final String API_PREFIX = "/bookings";
 
-    @Autowired
     public BookingClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
@@ -25,6 +23,14 @@ public class BookingClient extends BaseClient {
                         .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                         .build()
         );
+    }
+
+    public ResponseEntity<Object> addStatusBooking(long userId, boolean approved, long bookingId) {
+        Map<String, Object> parameters = Map.of(
+                "approved", approved
+        );
+        String path = String.format("/%d?approved=%b", bookingId, approved);
+        return patch(path, userId, parameters);
     }
 
     public ResponseEntity<Object> getBookings(long userId, BookingStatus state, Integer from, Integer size) {
@@ -36,16 +42,33 @@ public class BookingClient extends BaseClient {
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-
-//    public ResponseEntity<Object> bookItem(long userId, BookItemRequestDto requestDto) {
-//        return post("", userId, requestDto);
-//    }
-
-    public ResponseEntity<Object> getBooking(long userId, Long bookingId) {
-        return get("/" + bookingId, userId);
+    public ResponseEntity<Object> getBooking(long userId, long bookingId) {
+        String path = String.format("/%d", bookingId);
+        return get(path, userId);
     }
 
     public ResponseEntity<Object> createBooking(BookingDto BookingDto, long userId) {
         return post("/", userId, null, BookingDto);
+    }
+
+    public ResponseEntity<Object> findAllBookingByUserId(long userId,
+                                                         BookingStatus state,
+                                                         int from,
+                                                         int size) {
+        Map<String, Object> parameters = Map.of(
+                "state", state,
+                "from", from,
+                "size", size
+        );
+        return get("/?state={state}&from={from}&size={size}", userId, parameters);
+    }
+
+    public ResponseEntity<Object> findAllBookingByOwnerId(long userId, BookingStatus state, int from, int size) {
+        Map<String, Object> parameters = Map.of(
+                "state", state,
+                "from", from,
+                "size", size
+        );
+        return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
     }
 }

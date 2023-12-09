@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
@@ -18,7 +17,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public BookingDto createBooking(BookingDto bookingDto,
+    public BookingDto createBooking(@RequestBody BookingDto bookingDto,
                                     @RequestHeader(USER_HEADER_ID) long userId) {
         log.info("Запрос на создание аренды вещи {} от юзера {}.", bookingDto.getItemId(), userId);
         return bookingService.createBooking(bookingDto, userId);
@@ -26,8 +25,8 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public BookingDto addStatusBooking(@RequestHeader(USER_HEADER_ID) long userId,
-                                                  @RequestParam boolean approved,
-                                                  @PathVariable long bookingId) {
+                                       @RequestParam boolean approved,
+                                       @PathVariable long bookingId) {
         log.info("Установить статус {} для запроса {} от юзера {}.", approved, bookingId, userId);
         return bookingService.addStatusBooking(userId, bookingId, approved);
     }

@@ -58,7 +58,9 @@ public class UserService {
     }
 
     public void checkExistsUser(long userId) {
+        log.info("Проверка юзера с id = " + userId);
         if (repository.findById(userId).isEmpty()) {
+            log.info("Не нашли юзера с id = " + userId);
             throw new UserNotFoundException(String.format("Пользователь с id = %d не существует", userId));
         }
     }
