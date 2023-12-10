@@ -10,6 +10,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingStatus;
 import ru.practicum.shareit.client.BaseClient;
+import ru.practicum.shareit.exceptions.ex.CheckStartAndEndBookingException;
 
 import javax.validation.constraints.Min;
 import java.util.Map;
@@ -51,6 +52,12 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> createBooking(BookingDto bookingDto, long userId) {
+
+        if (bookingDto.getStart().isAfter(bookingDto.getEnd())
+                || bookingDto.getStart().equals(bookingDto.getEnd())) {
+            throw new CheckStartAndEndBookingException("Неверны даты начала и окончания аренды.");
+        }
+
         return post("/", userId, null, bookingDto);
     }
 

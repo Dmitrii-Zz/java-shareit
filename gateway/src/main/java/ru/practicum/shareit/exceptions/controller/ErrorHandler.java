@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.exceptions.ex.CheckStartAndEndBookingException;
 import ru.practicum.shareit.exceptions.model.ErrorResponse;
 import ru.practicum.shareit.exceptions.ex.UnsuportedBookingStatusException;
 
@@ -38,6 +39,13 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidException(final MethodArgumentNotValidException e) {
+        log.debug("Произошла ошибка {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCheckStartAndEndBookingException(final CheckStartAndEndBookingException e) {
         log.debug("Произошла ошибка {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }

@@ -41,13 +41,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleCheckStartAndEndBookingException(final CheckStartAndEndBookingException e) {
-        log.debug("Произошла ошибка {}", e.getMessage(), e);
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleBookingNotFountException(final BookingNotFoundException e) {
         log.debug("Произошла ошибка {}", e.getMessage(), e);

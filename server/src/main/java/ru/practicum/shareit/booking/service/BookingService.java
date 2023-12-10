@@ -34,11 +34,6 @@ public class BookingService {
     @Transactional
     public BookingDto createBooking(BookingDto bookingDto, long userId) {
 
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd())
-                || bookingDto.getStart().equals(bookingDto.getEnd())) {
-            throw new CheckStartAndEndBookingException("Неверны даты начала и окончания аренды.");
-        }
-
         userService.checkExistsUser(userId);
 
         boolean isAvailableItem = itemService.checkIsAvailableItem(bookingDto.getItemId());
