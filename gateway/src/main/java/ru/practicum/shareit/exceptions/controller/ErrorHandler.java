@@ -22,6 +22,7 @@ public class ErrorHandler {
         log.debug("Произошла ошибка {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleSpringValidationException(final ConstraintViolationException e) {
