@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -15,10 +14,6 @@ import ru.practicum.shareit.valid.Mark.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import static ru.practicum.shareit.constant.Constants.USER_HEADER_ID;
 
@@ -33,7 +28,7 @@ public class ItemController {
     @PostMapping
     public ResponseEntity<Object> createItem(@RequestHeader(USER_HEADER_ID) @Positive long userId,
                                              @Validated({Create.class}) @RequestBody ItemDto itemDto) {
-        log.info("Запрос создания вещи юзера id = " + userId);
+        log.info("Запрос создания вещи юзера id = {}", userId);
         return itemClient.createItem(itemDto, userId);
     }
 
@@ -42,14 +37,14 @@ public class ItemController {
                                      @PathVariable @Positive long itemId,
                                      @RequestHeader(USER_HEADER_ID) @Positive long userId,
                                      @RequestBody @Validated({Update.class}) ItemDto itemDto) {
-        log.info("Обновление вещи пользователя id = " + userId);
+        log.info("Обновление вещи пользователя id = {}", userId);
         return itemClient.updateItem(itemDto, itemId, userId);
     }
 
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItemById(@RequestHeader(USER_HEADER_ID) @Positive long userId,
                                               @PathVariable @Positive long itemId) {
-        log.info("Запрос вещи id = " + itemId);
+        log.info("Запрос вещи id = {}", itemId);
         return itemClient.getItemById(itemId, userId);
     }
 
@@ -78,6 +73,7 @@ public class ItemController {
     public ResponseEntity<Object> addComment(@RequestHeader(USER_HEADER_ID) @Positive long userId,
                                              @PathVariable @Positive long itemId,
                                              @RequestBody @Valid CommentDto commentDto) {
+        log.info("Добавить комментарий от юзера id = {}, text = {}", userId, commentDto.getText());
         return itemClient.addComment(commentDto, userId, itemId);
     }
 }

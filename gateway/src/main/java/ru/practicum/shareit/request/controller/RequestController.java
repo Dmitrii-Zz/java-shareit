@@ -33,7 +33,7 @@ public class RequestController {
 
     @GetMapping
     public ResponseEntity<Object> getAllUsersItemRequest(@RequestHeader(USER_HEADER_ID) @Positive long userId) {
-        log.info("Запрос на возврат списка запросов юзера: " + userId);
+        log.info("Запрос на возврат списка запросов юзера: {}", userId);
         return requestClient.getAllUsersItemRequest(userId);
     }
 
@@ -42,15 +42,14 @@ public class RequestController {
             @RequestHeader(USER_HEADER_ID) @Positive long userId,
             @RequestParam(defaultValue = "0") @PositiveOrZero int from,
             @RequestParam(defaultValue = "10") @Positive int size) {
-        log.info(String.format("Запрос от юзера id = %d, " +
-                "параметр from = %d, параметр size = %d", userId, from, size));
+        log.info("Запрос от юзера id = {}, параметр from = {}, параметр size = {}", userId, from, size);
         return requestClient.getAllOtherUsersItemRequest(userId, from, size);
     }
 
     @GetMapping("{requestId}")
     public ResponseEntity<Object> getItemRequest(@PathVariable @Positive long requestId,
                                                  @RequestHeader(USER_HEADER_ID) @Positive long userId) {
-        log.info("Запрос на возврат запроса с id = " + requestId + " от юзера id = " + userId);
+        log.info("Запрос на возврат запроса с id = {}, от юзера id = {}", requestId, userId);
         return requestClient.getItemRequest(userId, requestId);
     }
 }

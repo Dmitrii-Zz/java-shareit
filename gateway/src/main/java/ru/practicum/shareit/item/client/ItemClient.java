@@ -51,7 +51,7 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> searchItem(String text, @Min(1) int from, @Min(0) int size, long userId) {
-        
+
         if (text.isBlank()) {
             return ResponseEntity.of(Optional.of(Collections.emptyList()));
         }

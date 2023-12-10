@@ -29,7 +29,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<Object> getUserById(@PathVariable @Positive long userId) {
-        log.info("Запрос пользователя id = " + userId);
+        log.info("Запрос пользователя id = {}", userId);
         return userClient.getUserById(userId);
     }
 
@@ -43,13 +43,13 @@ public class UserController {
     public ResponseEntity<Object> updateUser(
                             @RequestBody @Validated({Update.class}) UserDto userDto,
                             @PathVariable @Positive long userId) {
-        log.info("Обновление юзера id = " + userId);
+        log.info("Обновление юзера id = {}", userId);
         return userClient.updateUser(userDto, userId);
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteUser(@PathVariable @Positive long userId) {
-        log.info("Удаление юзера id = " + userId);
+        log.info("Удаление юзера id = {}", userId);
         return userClient.deleteUser(userId);
     }
 }

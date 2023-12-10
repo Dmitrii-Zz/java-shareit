@@ -23,7 +23,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public UserDto getUserById(@PathVariable long userId) {
-        log.info("Запрос пользователя id = " + userId);
+        log.info("Запрос пользователя id = {}", userId);
         return userService.getUserById(userId);
     }
 
@@ -35,7 +35,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public UserDto updateUser(@RequestBody UserDto userDto, @PathVariable long userId) {
-        log.info("Обновление юзера id = " + userId);
+        log.info("Обновление юзера id = {}", userId);
         return userService.updateUser(userDto, userId);
     }
 

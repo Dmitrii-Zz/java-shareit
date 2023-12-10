@@ -22,7 +22,7 @@ public class ItemController {
     @PostMapping
     public ItemDto createItem(@RequestHeader(USER_HEADER_ID) long userId,
                               @RequestBody ItemDto itemDto) {
-        log.info("Запрос создания вещи юзера id = " + userId);
+        log.info("Запрос создания вещи юзера id = {}", userId);
         return itemService.createItem(itemDto, userId);
     }
 
@@ -30,14 +30,14 @@ public class ItemController {
     public ItemDto updateItem(@RequestHeader(USER_HEADER_ID) long userId,
                               @PathVariable long itemId,
                               @RequestBody ItemDto itemDto) {
-        log.info("Обновление вещи пользователя id = " + userId);
+        log.info("Обновление вещи пользователя id = {}", userId);
         return itemService.updateItem(itemDto, userId, itemId);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto getItemById(@RequestHeader(USER_HEADER_ID) long userId,
                                @PathVariable long itemId) {
-        log.info("Запрос вещи id = " + itemId);
+        log.info("Запрос вещи id = {}", itemId);
         return itemService.getItemById(itemId, userId);
     }
 
