@@ -40,8 +40,8 @@ public class UserClient extends BaseClient {
         return patch(path, userDto);
     }
 
-    public void deleteUser(long userId) {
+    public ResponseEntity<Object> deleteUser(long userId) {
         String path = String.format("/%d", userId);
-        delete(path);
+        return delete(path);
     }
 }
