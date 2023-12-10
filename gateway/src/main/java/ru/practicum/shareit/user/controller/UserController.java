@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.client.UserClient;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.valid.Mark.*;
 
 import javax.validation.constraints.Min;
 
@@ -19,7 +20,7 @@ public class UserController {
     private final UserClient userClient;
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@Validated @RequestBody UserDto userDto) {
+    public ResponseEntity<Object> createUser(@Validated({Create.class}) @RequestBody UserDto userDto) {
         log.info("Запрос на создание юзера, name = {}, email = {} .", userDto.getName(), userDto.getEmail());
         return userClient.createUser(userDto);
     }
@@ -37,7 +38,9 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@RequestBody UserDto userDto, @PathVariable @Min(1) long userId) {
+    public ResponseEntity<Object> updateUser(
+                            @RequestBody @Validated({Update.class}) UserDto userDto,
+                            @PathVariable @Min(1) long userId) {
         log.info("Обновление юзера id = " + userId);
         return userClient.updateUser(userDto, userId);
     }

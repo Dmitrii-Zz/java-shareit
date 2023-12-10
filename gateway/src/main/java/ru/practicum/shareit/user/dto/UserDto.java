@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+import ru.practicum.shareit.valid.Mark.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -15,10 +17,11 @@ import javax.validation.constraints.NotBlank;
 public class UserDto {
     private long id;
 
-    @NotBlank(message = "Имя не должно быть пустым.")
+    @NotBlank(groups = {Create.class}, message = "Имя не должно быть пустым.")
+    @Length(max = 255, message = "Длина имени не должна превышать 255 симоволов.")
     private String name;
 
-    @NotBlank(message = "Отсутствует email.")
-    @Email(message = "Введен некорректный адрес электронной почты.")
+    @NotBlank(groups = {Create.class}, message = "Отсутствует email.")
+    @Email(groups = {Create.class, Update.class}, message = "Введен некорректный адрес электронной почты.")
     private String email;
 }

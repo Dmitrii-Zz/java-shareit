@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.constraints.NotBlank;
@@ -18,7 +19,8 @@ public class ItemRequestDto {
 
     private long id;
 
-    @NotBlank(message = "В запросе отсутствует описание запроса")
+    @NotBlank(message = "В запросе отсутствует описание запроса.")
+    @Length(max = 2000, message = "Максимальная длина описания 2000 символов.")
     private String description;
 
     private LocalDateTime created;

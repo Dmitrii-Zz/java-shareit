@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.client.ItemClient;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.valid.Mark.*;
 
 import javax.validation.Valid;
 
@@ -22,15 +23,16 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Object> createItem(@RequestHeader(USER_HEADER_ID) long userId,
-                                             @Validated @RequestBody ItemDto itemDto) {
+                                             @Validated({Create.class}) @RequestBody ItemDto itemDto) {
         log.info("Запрос создания вещи юзера id = " + userId);
         return itemClient.createItem(itemDto, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Object> updateItem(@RequestHeader(USER_HEADER_ID) long userId,
-                                             @PathVariable long itemId,
-                                             @RequestBody ItemDto itemDto) {
+    public ResponseEntity<Object> updateItem(
+                                     @PathVariable long itemId,
+                                     @RequestHeader(USER_HEADER_ID) long userId,
+                                     @RequestBody @Validated({Update.class}) ItemDto itemDto) {
         log.info("Обновление вещи пользователя id = " + userId);
         return itemClient.updateItem(itemDto, itemId, userId);
     }
