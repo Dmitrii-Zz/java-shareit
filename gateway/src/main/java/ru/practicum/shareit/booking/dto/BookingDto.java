@@ -1,12 +1,10 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BookingDto {
 
-    @Min(1)
+    @Positive
     private long itemId;
 
     @NotNull(message = "Отсутствует начальная точка отсчета.")

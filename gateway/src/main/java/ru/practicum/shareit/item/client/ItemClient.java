@@ -11,7 +11,9 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.constraints.Min;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ItemClient extends BaseClient {
@@ -49,6 +51,11 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> searchItem(String text, @Min(1) int from, @Min(0) int size, long userId) {
+        
+        if (text.isBlank()) {
+            return ResponseEntity.of(Optional.of(Collections.emptyList()));
+        }
+
         Map<String, Object> parameters = Map.of(
                 "text", text,
                 "from", from,

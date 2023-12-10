@@ -10,10 +10,11 @@ import ru.practicum.shareit.user.client.UserClient;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.valid.Mark.*;
 
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
 
 @Slf4j
 @Controller
+@Validated
 @RequiredArgsConstructor
 @RequestMapping(path = "/users")
 public class UserController {
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUserById(@PathVariable @Min(1) long userId) {
+    public ResponseEntity<Object> getUserById(@PathVariable @Positive long userId) {
         log.info("Запрос пользователя id = " + userId);
         return userClient.getUserById(userId);
     }
@@ -41,13 +42,13 @@ public class UserController {
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> updateUser(
                             @RequestBody @Validated({Update.class}) UserDto userDto,
-                            @PathVariable @Min(1) long userId) {
+                            @PathVariable @Positive long userId) {
         log.info("Обновление юзера id = " + userId);
         return userClient.updateUser(userDto, userId);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> deleteUser(@PathVariable long userId) {
+    public ResponseEntity<Object> deleteUser(@PathVariable @Positive long userId) {
         log.info("Удаление юзера id = " + userId);
         return userClient.deleteUser(userId);
     }
