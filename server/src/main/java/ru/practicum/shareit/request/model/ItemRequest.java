@@ -4,8 +4,6 @@ import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,7 +20,6 @@ public class ItemRequest {
     private long id;
 
     @Column
-    @NotBlank(message = "В запросе отсутствует описание запроса")
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,6 +27,5 @@ public class ItemRequest {
     private User requestor;
 
     @Column
-    @NotNull
     private LocalDateTime created;
 }

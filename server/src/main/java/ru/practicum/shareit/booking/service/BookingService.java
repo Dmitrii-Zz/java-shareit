@@ -17,7 +17,6 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.utils.Page;
 
-import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -99,7 +98,7 @@ public class BookingService {
                 String.format("Вещь с id = %d недоступна для юзера id = %d.", booking.getItem().getId(), userId));
     }
 
-    public List<BookingDto> findAllBookingByUserId(long userId, String state, @Min(0) int from, @Min(1) int size) {
+    public List<BookingDto> findAllBookingByUserId(long userId, String state, int from, int size) {
         userService.checkExistsUser(userId);
         List<Booking> bookings;
         BookingStatus status = konvertBookingStatus(state);
@@ -128,9 +127,7 @@ public class BookingService {
         return getListBookingDto(bookings);
     }
 
-    public List<BookingDto> findAllBookingByOwnerId(long userId, String state,
-                                                    @Min(0) int from,
-                                                    @Min(1) int size) {
+    public List<BookingDto> findAllBookingByOwnerId(long userId, String state, int from, int size) {
         userService.checkExistsUser(userId);
         PageRequest pageRequest = Page.createPageRequest(from, size);
         List<Booking> bookings;

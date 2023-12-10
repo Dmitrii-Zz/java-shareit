@@ -5,14 +5,17 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingStatus;
 import ru.practicum.shareit.client.BaseClient;
 
+import javax.validation.constraints.Min;
 import java.util.Map;
 
 @Service
+@Validated
 public class BookingClient extends BaseClient {
     private static final String API_PREFIX = "/bookings";
 
@@ -53,8 +56,8 @@ public class BookingClient extends BaseClient {
 
     public ResponseEntity<Object> findAllBookingByUserId(long userId,
                                                          BookingStatus state,
-                                                         int from,
-                                                         int size) {
+                                                         @Min(0) int from,
+                                                         @Min(1) int size) {
         Map<String, Object> parameters = Map.of(
                 "state", state,
                 "from", from,
@@ -63,7 +66,10 @@ public class BookingClient extends BaseClient {
         return get("/?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> findAllBookingByOwnerId(long userId, BookingStatus state, int from, int size) {
+    public ResponseEntity<Object> findAllBookingByOwnerId(long userId,
+                                                          BookingStatus state,
+                                                          @Min(0) int from,
+                                                          @Min(1) int size) {
         Map<String, Object> parameters = Map.of(
                 "state", state,
                 "from", from,

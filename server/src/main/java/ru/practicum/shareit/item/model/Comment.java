@@ -4,7 +4,6 @@ import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Setter
@@ -21,7 +20,6 @@ public class Comment {
     private long id;
 
     @Column(name = "text")
-    @NotBlank(message = "В запросе нет текста комментария.")
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)

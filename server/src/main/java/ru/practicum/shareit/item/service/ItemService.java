@@ -28,7 +28,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.utils.Page;
 
-import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -114,7 +113,7 @@ public class ItemService {
         }
     }
 
-    public List<ItemOwnerDto> findAllOwnersItems(long userId, @Min(0) int from, @Min(1) int size) {
+    public List<ItemOwnerDto> findAllOwnersItems(long userId, int from, int size) {
         userService.checkExistsUser(userId);
         List<Item> items = itemStorage.findByOwnerId(userId, Page.createPageRequest(from, size));
         return buildListItemOwnerDto(items);
@@ -162,7 +161,7 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
-    public List<ItemDto> searchItem(String text, @Min(0) int from, @Min(1) int size) {
+    public List<ItemDto> searchItem(String text, int from, int size) {
         if (text.isBlank()) {
             return new ArrayList<>();
         }

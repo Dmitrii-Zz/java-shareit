@@ -10,6 +10,7 @@ import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
+import javax.validation.constraints.Min;
 import java.util.Map;
 
 @Service
@@ -39,7 +40,7 @@ public class ItemClient extends BaseClient {
         return get(path, userId);
     }
 
-    public ResponseEntity<Object> getAllItemOwner(long userId, int from, int size) {
+    public ResponseEntity<Object> getAllItemOwner(long userId, @Min(0) int from, @Min(1) int size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
@@ -47,7 +48,7 @@ public class ItemClient extends BaseClient {
         return get("?from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> searchItem(String text, int from, int size, long userId) {
+    public ResponseEntity<Object> searchItem(String text, @Min(1) int from, @Min(0) int size, long userId) {
         Map<String, Object> parameters = Map.of(
                 "text", text,
                 "from", from,

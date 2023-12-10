@@ -15,7 +15,6 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.utils.Page;
 
-import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +42,7 @@ public class ItemRequestService {
         return getListItemRequestDto(itemRequestStorage.findAllByRequestorId(userId));
     }
 
-    public List<ItemRequestDto> getAllOtherUsersItemRequest(long userId, @Min(0) int from, @Min(1) int size) {
+    public List<ItemRequestDto> getAllOtherUsersItemRequest(long userId, int from, int size) {
         userService.checkExistsUser(userId);
         log.info("From = " + from + " Size = " + size);
         return getListItemRequestDto(itemRequestStorage
