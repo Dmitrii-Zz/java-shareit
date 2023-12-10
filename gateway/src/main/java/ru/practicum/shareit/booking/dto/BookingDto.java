@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BookingDto {
 
-    private long id;
-
     @Min(1)
     private long itemId;
 
@@ -27,10 +25,4 @@ public class BookingDto {
     @NotNull(message = "Отсутствует конечная точка отсчета.")
     @FutureOrPresent
     private LocalDateTime end;
-
-    private UserDto booker;
-
-    private ItemDto item;
-
-    private BookingStatus status;
 }

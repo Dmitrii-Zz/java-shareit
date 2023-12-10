@@ -14,13 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDto {
-    private long id;
 
     @NotBlank(message = "В запросе отсутствует текст отзыва.")
     @Length(max = 2000, message = "Превышена длина отзыва.")
     private String text;
-
-    private String authorName;
-
-    private LocalDateTime created;
 }

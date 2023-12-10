@@ -17,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemDto {
-    private long id;
 
     @NotBlank(groups = {Create.class}, message = "В запросе отсутствует имя вещи.")
     @Length(max = 255, message = "Максимальная длин имени вещи 255 симоволов.")
@@ -29,8 +28,6 @@ public class ItemDto {
 
     @NotNull(groups = {Create.class}, message = "В запросе отсутствует статус запроса к аренде.")
     private Boolean available;
-
-    private List<CommentDto> comments;
 
     @JsonProperty("requestId")
     private Long itemRequest;

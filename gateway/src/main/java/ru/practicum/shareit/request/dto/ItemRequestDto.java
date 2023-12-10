@@ -17,13 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ItemRequestDto {
 
-    private long id;
-
     @NotBlank(message = "В запросе отсутствует описание запроса.")
     @Length(max = 2000, message = "Максимальная длина описания 2000 символов.")
     private String description;
-
-    private LocalDateTime created;
-
-    private List<ItemDto> items;
 }

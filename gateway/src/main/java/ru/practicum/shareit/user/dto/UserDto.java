@@ -15,7 +15,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-    private long id;
 
     @NotBlank(groups = {Create.class}, message = "Имя не должно быть пустым.")
     @Length(max = 255, message = "Длина имени не должна превышать 255 симоволов.")
